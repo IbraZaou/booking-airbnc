@@ -44,8 +44,7 @@ const LoginPage = () => {
                         type="password"
                         placeholder='password'
                         value={password}
-                        onChange={ev => setPassword(ev.target.value)}
-                    />
+                        onChange={ev => setPassword(ev.target.value)} />
 
                     <button className='primary'>Login</button>
                     <p className='text-center py-2 text-gray-500'>Don't have an account yet?
