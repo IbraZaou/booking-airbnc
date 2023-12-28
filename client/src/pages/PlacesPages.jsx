@@ -57,20 +57,26 @@ const PlacesPages = () => {
         const files = ev.target.files;
         console.log(files);
         const data = new FormData();
-
+    
         for (let i = 0; i < files.length; i++) {
             data.append('photos', files[i]);
         }
-
+    
         axios.post('/upload', data, {
-            headers: {'Content-type':'multipart/form-data'}
-        }).then(response => {
-            const{data:imagesPath } = response;
-            setAddedPhotos(prev => {
-                return [...prev, ...imagesPath]
-            })
+            headers: { 'Content-type': 'multipart/form-data' }
         })
-      }
+        .then(response => {
+            const { data: filenames } = response;
+            // Assuming response.data is an array of filenames
+            setAddedPhotos(prev => {
+                return [...prev, ...filenames];
+            });
+        })
+        .catch(error => {
+            // Handle any errors from the server
+            console.error('Error uploading files:', error);
+        });
+    }
 
     return (
         <div>
@@ -127,8 +133,8 @@ const PlacesPages = () => {
 </svg>
 <input 
 type="file" 
-multiple 
-className='hidden' 
+className='hidden'
+multiple
 onChange={uploadPhoto} />
 
  Upload</label>

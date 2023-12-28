@@ -125,23 +125,23 @@ app.post('/upload-by-link', async (req, res) => {
 
 
 
-// Endpoints upload from computer
-const photosMiddleware = multer({dest:'uploads'});
-app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
+const photosMiddleware = multer({ dest: 'uploads/' });
 
+app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
     const uploadedFiles = [];
 
     for (let i = 0; i < req.files.length; i++) {
-        const {path, originalname} = req.files[i];
+        const { path, originalname } = req.files[i];
         const parts = originalname.split('.');
         const ext = parts[parts.length - 1];
-        const newPath = path + '.' + ext;
+        const newFilename = `${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
+        const newPath = `uploads/${newFilename}`; 
         fs.renameSync(path, newPath);
-        uploadedFiles.push(newPath.replace('uploads/',''));
+        uploadedFiles.push(newFilename); 
     }
-    res.json(req.files);
-})
 
+    res.json(uploadedFiles); 
+});
 
 
 app.listen(4000);
