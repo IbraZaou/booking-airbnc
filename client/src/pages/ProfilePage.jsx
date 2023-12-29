@@ -10,8 +10,8 @@ const ProfilePage = () => {
     const { ready, user, setUser } = useContext(UserContext);
     const [redirect, setRedirect] = useState(null);
 
-        
-    
+
+
     let { subpage } = useParams();
     if (subpage === undefined) {
         subpage = 'profile';
@@ -42,7 +42,7 @@ const ProfilePage = () => {
 
     return (
         <div>
-            
+
             <AccountNav />
 
             {subpage === 'profile' && (
