@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User.js');
 const Place = require('./models/Place.js');
+const Booking = require('./models/Booking.js');
 const cookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
 const multer = require('multer');
@@ -104,6 +105,7 @@ app.post('/logout', (req, res) => {
 
 
 const path = require('path');
+const BookingModel = require('./models/Booking.js');
 
 // Endpoint Upload
 app.post('/upload-by-link', async (req, res) => {
@@ -153,7 +155,7 @@ app.post('/places', (req, res) => {
     const {
         title, address, addedPhotos,
         description, perks, extraInfo,
-        checkIn, checkOut, maxGuests } = req.body;
+        checkIn, checkOut, maxGuests, price } = req.body;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) throw err;
 
@@ -161,7 +163,7 @@ app.post('/places', (req, res) => {
             owner: userData.id,
             title, address, photos: addedPhotos,
             description, perks, extraInfo,
-            checkIn, checkOut, maxGuests
+            checkIn, checkOut, maxGuests, price
         })
 
         res.json(placeDoc);
@@ -198,7 +200,7 @@ app.put('/places', async (req, res) => {
     const {
         id, title, address, addedPhotos,
         description, perks, extraInfo,
-        checkIn, checkOut, maxGuests
+        checkIn, checkOut, maxGuests, price
     } = req.body;
 
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
@@ -207,7 +209,7 @@ app.put('/places', async (req, res) => {
             placeDoc.set({
                 title, address, photos: addedPhotos,
                 description, perks, extraInfo,
-                checkIn, checkOut, maxGuests
+                checkIn, checkOut, maxGuests, price,
             })
             await placeDoc.save();
             res.json('ok');
@@ -216,9 +218,23 @@ app.put('/places', async (req, res) => {
 });
 
 
-
+//GET All places
 app.get('/places', async (req, res) => {
     res.json(await Place.find());
+})
+
+
+app.post('/bookings', (req, res) => {
+    const { place, checkIn, checkOut,
+        numberOfGuests, name, phone, price } = req.body;
+    Booking.create({
+        place, checkIn, checkOut,
+        numberOfGuests, name, phone, price
+    }).then((err, doc) => {
+        res.json(doc);
+    }).catch((err) => {
+        throw err;
+    })
 })
 
 
