@@ -28,26 +28,38 @@ app.use(cors({
 // console.log(process.env.MONGO_URL);
 mongoose.connect(process.env.MONGO_URL);
 
+
+// Function to grab token
+function getUserDataFromReq(req) {
+
+    return new Promise((resolve, reject) => {
+        jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+            if
+                (err) throw err;
+            resolve(userData);
+        })
+    });
+}
+
+
+
 // Test endpoint
 app.get('/test', (req, res) => {
     res.json('test ok');
 });
 
 
-app.post('/register', async (req, res) => {
+// Endpoint register
+app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
 
-    try {
-        const userDoc = await User.create({
-            name,
-            email,
-            password: bcrypt.hashSync(password, bcryptSalt),
-        })
-        res.json(userDoc);
+    const userDoc = User.create({
+        name,
+        email,
+        password: bcrypt.hashSync(password, bcryptSalt)
+    })
 
-    } catch (err) {
-        res.status(422).json(err);
-    }
+    res.json(userDoc)
 })
 
 
@@ -224,19 +236,27 @@ app.get('/places', async (req, res) => {
 })
 
 
-app.post('/bookings', (req, res) => {
+app.post('/bookings', async (req, res) => {
+    const userData = await getUserDataFromReq(req);
     const { place, checkIn, checkOut,
         numberOfGuests, name, phone, price } = req.body;
     Booking.create({
         place, checkIn, checkOut,
-        numberOfGuests, name, phone, price
-    }).then((err, doc) => {
+        numberOfGuests, name, phone, price, user: userData.id
+    }).then((doc) => {
         res.json(doc);
     }).catch((err) => {
         throw err;
     })
 })
 
+
+
+// GET ALL BOOKINGS
+app.get('/bookings', async (req, res) => {
+    const userData = await getUserDataFromReq(req);
+    res.json(await Booking.find({ user: userData.id }).populate('place'))
+})
 
 
 
