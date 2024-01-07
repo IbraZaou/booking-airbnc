@@ -10,8 +10,12 @@ const cookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
+const passport = require('passport');
+const session = require('express-session');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 require('dotenv').config()
 const app = express();
+
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = 'lfmqjdlM4MIjkljf4fjfldksjf';
@@ -23,6 +27,11 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173',
+}));
+app.use(session({
+    secret: 'fqjfFSDGHFlqmjfklHDUIFDSF5874RHA3489dfdsqfdsqfdsqfHF',
+    resave: false,
+    saveUninitialized: true
 }));
 
 // console.log(process.env.MONGO_URL);
@@ -43,10 +52,10 @@ function getUserDataFromReq(req) {
 
 
 
-// Test endpoint
-app.get('/test', (req, res) => {
-    res.json('test ok');
-});
+// // Test endpoint
+// app.get('/test', (req, res) => {
+//     res.json('test ok');
+// });
 
 
 // Endpoint register
@@ -61,6 +70,108 @@ app.post('/register', (req, res) => {
 
     res.json(userDoc)
 })
+
+
+
+
+
+
+
+
+// Login with google
+
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:4000/auth/google/callback"
+},
+    async (accessToken, refreshToken, profile, done) => {
+
+        try {
+            const existingUser = await User.findOne({ googleId: profile.id });
+
+            if (existingUser) {
+                // If the user already exists, return the user
+                return done(null, existingUser);
+            } else {
+                // If the user doesn't exist, create a new user with the googleId
+                const newUser = new User({
+                    googleId: profile.id,
+                    name: profile.displayName, // Google profile's display name
+                    email: profile.emails[0].value, // The first email address found
+                    // Add other relevant user properties here
+                });
+                await newUser.save();
+                return done(null, newUser);
+            }
+        } catch (error) {
+            return done(error);
+        }
+    }));
+
+
+
+// Route pour rediriger l'utilisateur vers Google pour l'authentification
+app.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Route de callback après que Google ait authentifié l'utilisateur
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    function (req, res) {
+        // Générez un JWT pour l'utilisateur authentifié
+        jwt.sign({
+            email: req.user.email,
+            id: req.user._id,
+        }, jwtSecret, {}, (err, token) => {
+            if (err) {
+                // Gérer l'erreur
+                res.redirect('/login');
+            } else {
+                // Envoyer le jeton au client, par exemple en le fixant comme un cookie
+                res.cookie('token', token);
+                // Rediriger l'utilisateur vers la page d'accueil ou une autre page
+                res.redirect('http://localhost:5173/');
+            }
+        });
+    });
+
+// Middleware pour initialiser Passport et restaurer l'état de l'authentification à partir de la session.
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (error) {
+        done(error);
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Endpoints login
@@ -89,6 +200,7 @@ app.post('/login', async (req, res) => {
         res.json('not found');
     }
 })
+
 
 
 
@@ -260,8 +372,64 @@ app.get('/bookings', async (req, res) => {
 
 
 
+app.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const userDoc = await User.findOne({ email });
+        if (!userDoc) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const resetToken = jwt.sign({ email: userDoc.email, id: userDoc._id }, jwtSecret, {
+            expiresIn: '1h' // Le token expire dans 1 heure
+        });
+
+        // Envoyer le token à l'utilisateur par e-mail
+        // À implémenter: Fonction d'envoi d'email avec le lien de réinitialisation
+        // Le lien pourrait ressembler à `http://votreapp.com/reset-password/${userDoc._id}/${resetToken}`
+
+        res.json({ message: "Email sent (simulated)" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
+app.get('/reset-password/:id/:token', async (req, res) => {
+    const { id, token } = req.params;
+
+    try {
+        const userDoc = await User.findById(id);
+        if (!userDoc) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Vérifier le token
+        jwt.verify(token, jwtSecret, (err, decoded) => {
+            if (err) {
+                // Token invalide ou expiré
+                return res.status(403).json({ message: "Invalid or expired token" });
+            }
+
+            // Token valide, permettre à l'utilisateur de définir un nouveau mot de passe
+            // À implémenter: Logique pour permettre à l'utilisateur de définir un nouveau mot de passe
+
+            res.json({ message: "Token valid, user can reset password" });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
+
 // port listener :
 app.listen(4000);
+
+
 
 
 

@@ -1,0 +1,52 @@
+import React, { useContext, useState } from 'react';
+import { Link, Navigate } from 'react-router-dom';
+import axios from 'axios';
+import { UserContext } from '../components/UserContext';
+
+const ResetPasswordPage = () => {
+    const [email, setEmail] = useState('');
+    const [redirect, setRedirect] = useState(false);
+    const [message, setMessage] = useState(''); // Ajout d'un état pour les messages
+    const { user, setUser } = useContext(UserContext);
+
+    const handleResetPassSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            // Envoie de la demande de réinitialisation du mot de passe
+            const response = await axios.post('http://localhost:4000/forgot-password', { email });
+            setMessage('Email sent. Please check your inbox.'); // Message de succès
+            // Autres actions en cas de succès (par exemple, redirection ou mise à jour de l'état)
+        } catch (error) {
+            setMessage('An error occurred. Please try again later.'); // Message d'erreur
+            console.error('Reset Password Error:', error);
+        }
+    };
+
+    if (redirect) {
+        return <Navigate to={'/'} />
+    }
+
+    return (
+        <div className='mt-4 grow flex items-center justify-around'>
+            <div className='mb-64'>
+                <h1 className='text-4xl text-center mb-4'>Reset Password</h1>
+                <form className='max-w-md mx-auto' onSubmit={handleResetPassSubmit}>
+                    <input
+                        type="email"
+                        placeholder='your@email.com'
+                        value={email}
+                        onChange={ev => setEmail(ev.target.value)} />
+
+                    <button className='primary'>Send an email</button>
+                    {message && <p className='text-center py-2 text-gray-500'>{message}</p>}
+                    <p className='text-center py-2 text-gray-500'>Don't have an account yet?
+                        <Link className='underline text-black' to={'/register'}> Register now</Link>
+                    </p>
+
+                </form>
+            </div>
+        </div >
+    );
+};
+
+export default ResetPasswordPage;

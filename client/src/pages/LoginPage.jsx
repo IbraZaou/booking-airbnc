@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../components/UserContext';
+import GOOGLE from '../assets/google.png';
 
 const LoginPage = () => {
 
@@ -9,6 +10,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [redirect, setRedirect] = useState(false);
     const { user, setUser } = useContext(UserContext);
+
 
     async function handleLoginSubmit(ev) {
         ev.preventDefault();
@@ -28,6 +30,9 @@ const LoginPage = () => {
         return <Navigate to={'/'} />
     }
 
+    function handleGoogleLogin() {
+        window.location.href = 'http://localhost:4000/auth/google';
+    }
 
     return (
         <div className='mt-4 grow flex items-center justify-around'>
@@ -47,9 +52,15 @@ const LoginPage = () => {
                         onChange={ev => setPassword(ev.target.value)} />
 
                     <button className='primary'>Login</button>
+                    <button
+                        className='flex py-2 bg-white border border-black rounded-2xl my-2 items-center w-full justify-center' onClick={handleGoogleLogin}>
+                        <img className='w-6 mx-2' src={GOOGLE} alt="" />
+                        Login with Google
+                    </button>
                     <p className='text-center py-2 text-gray-500'>Don't have an account yet?
                         <Link className='underline text-black' to={'/register'}> Register now</Link>
                     </p>
+
                 </form>
             </div>
         </div >
