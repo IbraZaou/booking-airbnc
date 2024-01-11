@@ -426,6 +426,35 @@ app.get('/reset-password/:id/:token', async (req, res) => {
 
 
 
+app.post('/reset-password/:id/:token', async (req, res) => {
+    const { id, token } = req.params;
+
+    try {
+        const userDoc = await User.findById(id);
+        if (!userDoc) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Vérifier le token
+        jwt.verify(token, jwtSecret, (err, decoded) => {
+            if (err) {
+                // Token invalide ou expiré
+                return res.status(403).json({ message: "Invalid or expired token" });
+            }
+
+            // Token valide, permettre à l'utilisateur de définir un nouveau mot de passe
+            // À implémenter: Logique pour permettre à l'utilisateur de définir un nouveau mot de passe
+
+            res.json({ message: "Token valid, user can reset password" });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
+
 // port listener :
 app.listen(4000);
 
