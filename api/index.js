@@ -15,6 +15,7 @@ const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 require('dotenv').config()
 const app = express();
+const nodemailer = require('nodemailer');
 
 
 const bcryptSalt = bcrypt.genSaltSync(10);
@@ -363,7 +364,6 @@ app.post('/bookings', async (req, res) => {
 })
 
 
-
 // GET ALL BOOKINGS
 app.get('/bookings', async (req, res) => {
     const userData = await getUserDataFromReq(req);
@@ -371,25 +371,53 @@ app.get('/bookings', async (req, res) => {
 })
 
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // Remplacez par votre service de messagerie
+    auth: {
+        user: 'humanboosterairbnc@gmail.com', // a mettre dans une variable d'environnement
+        pass: 'mhrgvivuwbevvpkg' //a mettre dans une variable d'environnement
+    }
+});
 
+
+//La route qui permet l'envoie de l'email + vérification si l'utilisateur existe
 app.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
 
     try {
         const userDoc = await User.findOne({ email });
         if (!userDoc) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "Aucun utilisateur n'a été trouvé" });
         }
 
         const resetToken = jwt.sign({ email: userDoc.email, id: userDoc._id }, jwtSecret, {
             expiresIn: '1h' // Le token expire dans 1 heure
         });
 
-        // Envoyer le token à l'utilisateur par e-mail
-        // À implémenter: Fonction d'envoi d'email avec le lien de réinitialisation
-        // Le lien pourrait ressembler à `http://votreapp.com/reset-password/${userDoc._id}/${resetToken}`
+        const linkResetPass = `http://localhost:4000/new-password/${userDoc._id}/${resetToken}`
 
-        res.json({ message: "Email sent (simulated)" });
+        // Préparation de l'e-mail
+        const mailOptions = {
+            from: 'humanboosterairbnc@gmail.com', // Remplacez par votre email
+            to: userDoc.email,
+            subject: 'Réinitialisation de votre mot de passe',
+            // html: `<p>Cliquez sur ce lien pour réinitialiser votre mot de passe : <a href="${linkResetPass}">${linkResetPass}</a></p>`
+            text: `Bonjour,\n\nVeuillez utiliser le lien suivant pour réinitialiser votre mot de passe : ${linkResetPass}`
+        };
+
+
+        // Envoyez l'e-mail
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ message: "Error sending email" });
+            } else {
+                console.log('Email sent: ' + info.response);
+                res.json({ message: "Email sent" });
+            }
+        });
+        console.log(linkResetPass);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -397,7 +425,7 @@ app.post('/forgot-password', async (req, res) => {
 });
 
 
-app.get('/reset-password/:id/:token', async (req, res) => {
+app.get('/new-password/:id/:token', async (req, res) => {
     const { id, token } = req.params;
 
     try {
@@ -416,7 +444,7 @@ app.get('/reset-password/:id/:token', async (req, res) => {
             // Token valide, permettre à l'utilisateur de définir un nouveau mot de passe
             // À implémenter: Logique pour permettre à l'utilisateur de définir un nouveau mot de passe
 
-            res.json({ message: "Token valid, user can reset password" });
+            res.redirect(`http://localhost:5173/new-password/${id}/${token}`);
         });
     } catch (error) {
         console.error(error);
@@ -426,8 +454,9 @@ app.get('/reset-password/:id/:token', async (req, res) => {
 
 
 
-app.post('/reset-password/:id/:token', async (req, res) => {
+app.post('/new-password/:id/:token', async (req, res) => {
     const { id, token } = req.params;
+    const { newPassword } = req.body; // Récupérer le nouveau mot de passe du corps de la requête
 
     try {
         const userDoc = await User.findById(id);
@@ -436,23 +465,26 @@ app.post('/reset-password/:id/:token', async (req, res) => {
         }
 
         // Vérifier le token
-        jwt.verify(token, jwtSecret, (err, decoded) => {
+        jwt.verify(token, jwtSecret, async (err, decoded) => {
             if (err) {
                 // Token invalide ou expiré
                 return res.status(403).json({ message: "Invalid or expired token" });
             }
 
-            // Token valide, permettre à l'utilisateur de définir un nouveau mot de passe
-            // À implémenter: Logique pour permettre à l'utilisateur de définir un nouveau mot de passe
+            // Hacher le nouveau mot de passe
+            const hashedPassword = await bcrypt.hash(newPassword, bcryptSalt);
 
-            res.json({ message: "Token valid, user can reset password" });
+            // Mettre à jour le mot de passe dans la base de données
+            userDoc.password = hashedPassword;
+            await userDoc.save();
+
+            res.redirect(`http://localhost:5173/login`);
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
-
 
 
 // port listener :

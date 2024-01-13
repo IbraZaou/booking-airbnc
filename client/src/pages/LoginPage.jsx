@@ -58,7 +58,11 @@ const LoginPage = () => {
                         Login with Google
                     </button>
                     <p className='text-center py-2 text-gray-500'>Don't have an account yet?
-                        <Link className='underline text-black' to={'/register'}> Register now</Link>
+                        <Link className='underline text-black mx-1' to={'/register'}>Register now</Link>
+                    </p>
+
+                    <p className='text-center py-2 text-gray-500'>Maybe your forgot your password?
+                        <Link className='underline text-black mx-1' to={'/reset-password'}>Reset it</Link>
                     </p>
 
                 </form>
