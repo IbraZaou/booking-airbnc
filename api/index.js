@@ -487,6 +487,40 @@ app.post('/new-password/:id/:token', async (req, res) => {
 });
 
 
+
+const stripe = require('stripe')('sk_test_51OYYXzBmkOgBJ5DWZ35euiyiZrHm6lkKQfPq36ilyv43wkGIDdy79z5dztYsIJVJlATqcOeoaJFcyKIkjpToZrep00EEXMkiTW');
+
+// Route pour créer une session de paiement Stripe
+app.post('/api/create-stripe-session', async (req, res) => {
+    try {
+        const { price } = req.body; // Récupérer le prix du corps de la requête
+
+        // Créer une session de paiement Stripe
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: 'Booking Payment',
+                    },
+                    unit_amount: price * 100, // Le prix doit être en centimes
+                },
+                quantity: 1,
+            }],
+            mode: 'payment',
+            success_url: `http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: 'http://localhost:5173/payment-cancelled',
+        });
+
+        // Renvoyer l'ID de la session au client
+        res.json({ sessionId: session.id });
+    } catch (error) {
+        console.error("Error creating Stripe session", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
 // port listener :
 app.listen(4000);
 
