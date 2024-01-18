@@ -14,6 +14,7 @@ import BookingPage from './pages/BookingPage';
 import RegisterPage from './pages/RegisterPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import NewPasswordPage from './pages/NewPasswordPage';
+import SuccessPaymentPage from './pages/SuccessPaymentPage';
 
 
 axios.defaults.baseURL = 'http://localhost:4000';
@@ -39,6 +40,7 @@ function App() {
           <Route path='/place/:id' element={<PlacePage />} />
           <Route path='/account/bookings' element={<BookingsPage />} />
           <Route path='/account/bookings/:id' element={<BookingPage />} />
+          <Route path='/payment-success' element={<SuccessPaymentPage />} />
         </Route>
       </Routes>
 
