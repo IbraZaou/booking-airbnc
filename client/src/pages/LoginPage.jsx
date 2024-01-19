@@ -3,6 +3,9 @@ import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../components/UserContext';
 import GOOGLE from '../assets/google.png';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const LoginPage = () => {
 
@@ -18,10 +21,10 @@ const LoginPage = () => {
         try {
             const response = await axios.post('/login', { email, password });
             setUser(response.data);
-            alert('Login successful');
+            toast.success('Login successful');
             setRedirect(true);
         } catch (err) {
-            alert('Login failed')
+            toast.error('email or password incorrect, try again');
         }
     }
 
@@ -35,8 +38,11 @@ const LoginPage = () => {
     }
 
     return (
+
         <div className='mt-4 grow flex items-center justify-around'>
             <div className='mb-64'>
+                <ToastContainer />
+
                 <h1 className='text-4xl text-center mb-4'>Login</h1>
                 <form className='max-w-md mx-auto' onSubmit={handleLoginSubmit}>
                     <input
