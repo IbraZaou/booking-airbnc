@@ -15,7 +15,8 @@ import RegisterPage from './pages/RegisterPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import NewPasswordPage from './pages/NewPasswordPage';
 import SuccessPaymentPage from './pages/SuccessPaymentPage';
-
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
 
 axios.defaults.baseURL = 'http://localhost:4000';
 axios.defaults.withCredentials = true;
@@ -41,6 +42,8 @@ function App() {
           <Route path='/account/bookings' element={<BookingsPage />} />
           <Route path='/account/bookings/:id' element={<BookingPage />} />
           <Route path='/payment-success' element={<SuccessPaymentPage />} />
+          <Route path='/about' element={<AboutPage />} />
+          <Route path='/contact' element={<ContactPage />} />
         </Route>
       </Routes>
 

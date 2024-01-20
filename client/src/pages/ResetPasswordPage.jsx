@@ -2,6 +2,8 @@ import React, { useContext, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../components/UserContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ResetPasswordPage = () => {
     const [email, setEmail] = useState('');
@@ -14,11 +16,13 @@ const ResetPasswordPage = () => {
         try {
             // Envoie de la demande de réinitialisation du mot de passe
             const response = await axios.post('http://localhost:4000/forgot-password', { email });
-            setMessage('Email sent. Please check your inbox.'); // Message de succès
+            toast.success("Email envoyé, n'oublié pas de vérifier vos spams");
+            // Message de succès
             // Autres actions en cas de succès (par exemple, redirection ou mise à jour de l'état)
         } catch (error) {
             setMessage('An error occurred. Please try again later.'); // Message d'erreur
-            console.error('Reset Password Error:', error);
+            toast.success('Un problème est survenu');
+
         }
     };
 
@@ -29,6 +33,8 @@ const ResetPasswordPage = () => {
     return (
         <div className='mt-4 grow flex items-center justify-around'>
             <div className='mb-64'>
+                <ToastContainer />
+
                 <h1 className='text-4xl text-center mb-4'>Reset Password</h1>
                 <form className='max-w-md mx-auto' onSubmit={handleResetPassSubmit}>
                     <input

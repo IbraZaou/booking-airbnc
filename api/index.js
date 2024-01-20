@@ -59,23 +59,30 @@ function getUserDataFromReq(req) {
 // });
 
 
+function validatePassword(password) {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/;
+    return regex.test(password);
+}
+
 // Endpoint register
 app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
 
-    const userDoc = User.create({
-        name,
-        email,
-        password: bcrypt.hashSync(password, bcryptSalt)
-    })
+    // Vérifier si le mot de passe est valide
+    if (!validatePassword(password)) {
+        return res.status(400).json({ message: 'Le mot de passe doit contenir au moins 5 caractères, une majuscule, un chiffre et un caractère spécial.' });
+    }
 
-    res.json(userDoc)
+    const hashedPassword = bcrypt.hashSync(password, bcryptSalt);
+
+    User.create({ name, email, password: hashedPassword })
+        .then(userDoc => {
+            res.json(userDoc);
+        })
+        .catch(err => {
+            res.status(500).json({ message: "Erreur lors de la création de l'utilisateur" });
+        });
 })
-
-
-
-
-
 
 
 
@@ -159,50 +166,32 @@ passport.deserializeUser(async (id, done) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Endpoints login
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body; // Ajout de username dans la requête
 
-    const userDoc = await User.findOne({ email });
+    const userDoc = await User.findOne({ email }); // Trouver l'utilisateur par username
 
     if (userDoc) {
         const passOk = bcrypt.compareSync(password, userDoc.password);
+        const emailOk = email === userDoc.email;
 
-        //Obtention du JWT
-
-        if (passOk) {
+        // Obtention du JWT
+        if (passOk && emailOk) {
             jwt.sign({
                 email: userDoc.email,
                 id: userDoc._id,
             }, jwtSecret, {}, (err, token) => {
                 if (err) throw err;
                 res.cookie('token', token).json(userDoc);
-            })
+            });
         } else {
-            res.status(422).json('pass not ok');
+            res.status(422).json('Credentials not ok');
         }
     } else {
-        res.json('not found');
+        res.status(404).json('User not found');
     }
-})
-
-
+});
 
 
 //Endpoints profile
@@ -453,10 +442,14 @@ app.get('/new-password/:id/:token', async (req, res) => {
 });
 
 
-
 app.post('/new-password/:id/:token', async (req, res) => {
     const { id, token } = req.params;
     const { newPassword } = req.body; // Récupérer le nouveau mot de passe du corps de la requête
+
+    // Vérifier si le nouveau mot de passe est valide
+    if (!validatePassword(newPassword)) {
+        return res.status(400).json({ message: 'Le mot de passe doit contenir au moins 5 caractères, une majuscule, un chiffre et un caractère spécial.' });
+    }
 
     try {
         const userDoc = await User.findById(id);
@@ -478,7 +471,9 @@ app.post('/new-password/:id/:token', async (req, res) => {
             userDoc.password = hashedPassword;
             await userDoc.save();
 
-            res.redirect(`http://localhost:5173/login`);
+            // Envoyer une réponse après la mise à jour réussie du mot de passe
+            res.status(200).json({ message: "Password updated successfully" });
+
         });
     } catch (error) {
         console.error(error);
@@ -487,6 +482,8 @@ app.post('/new-password/:id/:token', async (req, res) => {
 });
 
 
+
+//STRIPE
 
 const stripe = require('stripe')('sk_test_51OYYXzBmkOgBJ5DWZ35euiyiZrHm6lkKQfPq36ilyv43wkGIDdy79z5dztYsIJVJlATqcOeoaJFcyKIkjpToZrep00EEXMkiTW');
 
