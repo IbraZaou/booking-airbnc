@@ -101,7 +101,6 @@ const ContactPage = () => {
                                         Envoyer
                                     </button>
                                 </div>
-
                             </div>
                         </form>
                     </div>
