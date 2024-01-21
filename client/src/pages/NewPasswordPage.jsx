@@ -21,11 +21,17 @@ const NewPasswordPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        const CustomToastWithLink = () => (
+            <div>
+                <Link to="/login">Votre mot de passe a bien été modifié, cliquez ici pour vous connectez</Link>
+            </div>
+        );
+
         try {
             // Effectuer une requête POST avec Axios
             const response = await axios.post(`/new-password/${id}/${token}`, { newPassword });
             console.log(response);
-            toast.success('Votre mot de passe a bien été modifié');
+            toast.success(CustomToastWithLink);
             // Rediriger l'utilisateur ou afficher un message de succès
         } catch (error) {
             toast.error('Le mot de passe doit contenir au moins 5 caractères, dont une majuscule, un chiffre et un caractère spécial.');
@@ -43,7 +49,7 @@ const NewPasswordPage = () => {
                         <input
                             type={inputType}
                             placeholder='password'
-                            value={password}
+                            value={newPassword}
                             onChange={ev => setNewPassword(ev.target.value)}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}

@@ -1,14 +1,18 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import BookingWidget from '../components/BookingWidget';
 import PlaceGallery from '../components/PlaceGallery';
 import BookingDates from '../components/BookingDates';
+import { UserContext } from '../components/UserContext';
+
 
 const PlacePage = () => {
 
     const { id } = useParams();
     const [place, setPlace] = useState(null);
+    const { user } = useContext(UserContext);
+
 
     useEffect(() => {
         if (!id) {
@@ -25,7 +29,7 @@ const PlacePage = () => {
 
 
     return (
-        <div className='mt-4 bg-gray-100 -mx-8 px-8 pt-8'>
+        <div className='mt-4 bg-gray-100 px-8 pt-8'>
             <h1 className='text-2xl'>{place.title}</h1>
             <a target='_blank'
                 href={'https://maps.google.com/?q=' + place.address}

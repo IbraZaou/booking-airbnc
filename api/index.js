@@ -338,6 +338,22 @@ app.get('/places', async (req, res) => {
 })
 
 
+//DELETE BOOKING
+app.delete('/places/:id', async (req, res) => {
+    const placeId = req.params.id;
+
+    try {
+        // Remplacez ceci par le code nécessaire pour supprimer la réservation de votre base de données
+        // Par exemple, si vous utilisez Mongoose :
+        await Place.findByIdAndDelete(placeId);
+
+        res.status(200).send({ message: 'Réservation supprimée avec succès' });
+    } catch (error) {
+        res.status(500).send({ message: "Erreur lors de la suppression de la réservation" });
+    }
+});
+
+
 app.post('/bookings', async (req, res) => {
     const userData = await getUserDataFromReq(req);
     const { place, checkIn, checkOut,
@@ -365,6 +381,23 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: 'humanboosterairbnc@gmail.com', // a mettre dans une variable d'environnement
         pass: 'mhrgvivuwbevvpkg' //a mettre dans une variable d'environnement
+    }
+});
+
+
+
+//DELETE BOOKING
+app.delete('/bookings/:id', async (req, res) => {
+    const bookingId = req.params.id;
+
+    try {
+        // Remplacez ceci par le code nécessaire pour supprimer la réservation de votre base de données
+        // Par exemple, si vous utilisez Mongoose :
+        await Booking.findByIdAndDelete(bookingId);
+
+        res.status(200).send({ message: 'Réservation supprimée avec succès' });
+    } catch (error) {
+        res.status(500).send({ message: "Erreur lors de la suppression de la réservation" });
     }
 });
 
@@ -517,6 +550,61 @@ app.post('/api/create-stripe-session', async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
+
+
+//TODO
+//route to delete your account
+app.delete('/delete-account', async (req, res) => {
+
+    try {
+        const userData = await getUserDataFromReq(req);
+        if (!userData) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        await User.findByIdAndDelete(userData.id);
+        res.clearCookie('token').json({ message: "Account deleted successfully" });
+    } catch (err) {
+        console.error('Error deleting account:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+
+})
+
+
+
+
+// Contact send message
+
+app.post('/send-message', async (req, res) => {
+    const { name, email, message } = req.body;
+
+    try {
+        // Préparation de l'e-mail
+        const mailOptions = {
+            from: email, // L'email de l'expéditeur (l'utilisateur qui remplit le formulaire)
+            to: 'humanboosterairbnc@gmail.com', // Votre email ou l'email où vous voulez recevoir les messages
+            subject: `Nouveau message de ${name}`,
+            text: `Vous avez reçu un nouveau message de ${name} (${email}):\n\n${message}`
+        };
+
+        // Envoyez l'e-mail
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ message: "Erreur lors de l'envoi de l'e-mail" });
+            } else {
+                console.log('Email envoyé: ' + info.response);
+                res.json({ message: "E-mail envoyé avec succès" });
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erreur du serveur interne" });
+    }
+});
+
 
 // port listener :
 app.listen(4000);

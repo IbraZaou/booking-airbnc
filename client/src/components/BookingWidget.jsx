@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { differenceInCalendarDays } from 'date-fns';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from './UserContext';
 
@@ -42,22 +42,24 @@ export default function BookingWidget({ place }) {
     return (
         <div className='bg-white grid-cols-1  md:p-4 rounded-2xl shadow'>
             <div className='text-2xl text-center'>
-                Price : {place.price} € / per night
+                {place.price} € / par nuit
             </div>
 
             <div className="border rounded-2xl mt-4">
-                <div className="flex">
-                    <div className='py-4 px-4'>
+                <div className="flex justify-center items-center">
+                    <div className='p-4 flex flex-col items-center justify-center'>
                         <label>Check In</label>
                         <input
+                            className='border border-black p-2 rounded-2xl'
                             type="date"
                             value={checkIn}
                             onChange={ev => setCheckIn(ev.target.value)} />
                     </div>
 
-                    <div className='py-4 px-4 border-l'>
+                    <div className='p-4 flex flex-col items-center justify-center border-l'>
                         <label>Check Out</label>
                         <input
+                            className='border border-black p-2 rounded-2xl'
                             type="date"
                             value={checkOut}
                             onChange={ev => setCheckOut(ev.target.value)} />
@@ -66,7 +68,7 @@ export default function BookingWidget({ place }) {
             </div>
 
             <div className='my-4 py-4 px-4 border-t'>
-                <label>Number of guests </label>
+                <label>Number of guests</label>
                 <input
                     type="number"
                     min={1}
@@ -83,18 +85,32 @@ export default function BookingWidget({ place }) {
 
                     <label>Phone number:</label>
                     <input
+                        maxlength="10"
                         type="tel"
                         value={phone}
                         onChange={ev => setPhone(ev.target.value)} />
                 </div>
             )}
 
-            <button onClick={bookThisPlace} className='primary mt-4'>
-                Book this place for
-                {numberOfNights > 0 && (
-                    <span> {numberOfNights * place.price} €</span>
-                )}
-            </button>
+            {
+                user ? (
+                    <button onClick={bookThisPlace} className='primary mt-4'>
+                        Book this place for
+                        {numberOfNights > 0 && (
+                            <span> {numberOfNights * place.price} €</span>
+                        )}
+                    </button>
+                ) : (
+
+                    <div className='flex justify-center items-center'>
+                        <a href={'/login'} className='primary text-center'>
+                            Connectez vous pour pouvoir réserver
+                        </a>
+                    </div>
+
+                )
+            }
+
         </div>
     );
 };

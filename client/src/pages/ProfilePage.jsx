@@ -4,6 +4,8 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import PlacesPages from './PlacesPage';
 import AccountNav from '../components/AccountNav';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProfilePage = () => {
 
@@ -17,6 +19,25 @@ const ProfilePage = () => {
         subpage = 'profile';
     }
 
+    async function deleteAccount() {
+        const confirmDelete = window.confirm("êtes vous sur de vouloir supprimer votre compte, cette action est irréversible");
+
+
+        if (confirmDelete) {
+            try {
+                await axios.delete('/delete-account');
+                setUser(null);
+                setRedirect('/');
+                toast.success('Votre compte a bien été supprimé');
+            } catch (err) {
+                toast.error('Une erreur est survenue');
+            }
+        }
+
+        console.log('votre compte a bien été supprimé');
+
+    }
+
 
     async function logout() {
         await axios.post('/logout');
@@ -25,16 +46,13 @@ const ProfilePage = () => {
 
     }
 
-
     if (!ready) {
         return 'Loading...';
     }
 
-
     if (ready && !user && !redirect) {
         return <Navigate to={'/login'} />
     }
-
 
     if (redirect) {
         return <Navigate to={redirect} />
@@ -47,8 +65,22 @@ const ProfilePage = () => {
 
             {subpage === 'profile' && (
                 <div className='text-center max-w-lg mx-auto'>
-                    Logged in as {user.name} ({user.email}) <br />
-                    <button onClick={logout} className='primary max-w-sm mt-2' >Logout</button>
+
+                    <input className='cursor-not-allowed' type="text"
+                        disabled
+                        placeholder={user.name}
+                    />
+
+                    <input className='cursor-not-allowed' type="text" disabled
+                        placeholder={user.email} />
+
+
+                    <div className='flex flex-col justify-center items-center mt-24 mb-24'>
+                        <button onClick={logout} className='primary max-w-sm mt-2' >Logout</button>
+                        <Link to={'/reset-password'} className='w-96 mt-2 py-2 px-4 rounded-2xl text-white text-center bg-primary'>Changer votre mot de passe</Link>
+                        <button onClick={deleteAccount} className='bg-red-500 mt-2 text-white rounded-2xl w-96 py-2 px-4'>Supprimer votre compte</button>
+                    </div>
+
                 </div>
             )}
 

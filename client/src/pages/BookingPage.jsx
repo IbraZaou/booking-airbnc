@@ -56,19 +56,22 @@ const BookingPage = () => {
 
     return (
         <div className="my-8">
-            <h1 className="text-3xl">{booking.place.title}</h1>
-            <AddressLink className="my-2 block">{booking.place.address}</AddressLink>
+            <h1 className="text-6xl mb-6 text-center">{booking.place.title}</h1>
+            <AddressLink className="mt-2 m-auto block w-24 text-center">{booking.place.address}</AddressLink>
 
-            <div onClick={stripePayment} className="bg-gray-200 p-6 my-6 rounded-2xl flex items-center justify-between hover:border border-primary cursor-pointer">
-                <div>
-                    <h2 className="text-2xl mb-4">Your booking information:</h2>
-                    <BookingDates booking={booking} />
-                </div>
-                <div className="bg-primary p-6 text-white rounded-2xl">
-                    <div>Total price</div>
-                    <div className="text-3xl">${booking.price}</div>
+            <div className='w-4/12 m-auto'>
+                <div onClick={stripePayment} className="bg-gray-200 p-6 my-6 rounded-2xl flex items-center justify-between hover:border w-full border-primary cursor-pointer">
+                    <div>
+                        <h2 className="text-2xl mb-4">Information de réservation:</h2>
+                        <BookingDates booking={booking} />
+                    </div>
+                    <div className="bg-primary p-6 text-white rounded-2xl">
+                        <div>Prix total</div>
+                        <div className="text-3xl">{booking.price} €</div>
+                    </div>
                 </div>
             </div>
+
             <PlaceGallery place={booking.place} />
         </div>
     );

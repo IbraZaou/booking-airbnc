@@ -16,6 +16,12 @@ const RegisterPage = () => {
         setInputType('text');
     };
 
+    const CustomToastWithLink = () => (
+        <div>
+            <Link to="/login">Vous êtes bien inscrit cliquez ici pour vous connectez</Link>
+        </div>
+    );
+
     const handleMouseLeave = () => {
         setInputType('password');
     };
@@ -29,8 +35,8 @@ const RegisterPage = () => {
                 email,
                 password
             });
-            toast.success('Registration successful. Now you can log in');
-            setRedirect(true);
+            toast.success(CustomToastWithLink);
+            // setRedirect(true);
         } catch (err) {
             toast.error('Registration failed. Please try again later');
         }
