@@ -101,7 +101,7 @@ const HomeScreen = () => {
             <ScrollView>
 
                 {/* Voir tout les appartements */}
-                <Text style={tw`m-4 text-2xl`}>Appartements</Text>
+                <Text style={tw`m-4 text-2xl`}>Les 3 derniers Appartements ajoutés</Text>
                 <ScrollView
                     horizontal
                     contentContainerStyle={{ paddingHorizontal: 5 }}
@@ -109,7 +109,7 @@ const HomeScreen = () => {
                     style={tw`flex-1 relative`}>
 
 
-                    {places.slice(0, 5).map((place, index) => (
+                    {places.slice(0, 3).map((place, index) => (
                         <View key={index} style={tw`justify-center items-center bg-red-500 m-2 p-4 rounded-2xl w-80 h-50`}>
                             {place.photos?.[0] && (
                                 <Image
@@ -131,14 +131,14 @@ const HomeScreen = () => {
 
                 {/* Voir tout les utilisateurs */}
 
-                <Text style={tw`m-4 text-2xl`}>Utilisateurs</Text>
+                <Text style={tw`m-4 text-2xl`}>Les 3 derniers Utilisateurs inscrit</Text>
                 <ScrollView
                     horizontal
                     contentContainerStyle={{ paddingHorizontal: 5 }}
                     showsHorizontalScrollIndicator={true}
                     style={tw`flex-1 relative`}>
 
-                    {users.slice(0, 5).map((user, index) => (
+                    {users.slice(0, 3).map((user, index) => (
                         <View key={index} style={tw`justify-center items-center bg-red-500 m-2 p-4 rounded-2xl w-80 h-50`}>
                             <Text style={tw`text-xl text-white mb-2`}>Utilisateur : {user.name}</Text>
                             <Text style={tw`text-white mb-2`}>{user.email}</Text>
@@ -157,14 +157,14 @@ const HomeScreen = () => {
 
                 {/* Voir tout les messages */}
 
-                <Text style={tw`m-4 text-2xl`}>Messages</Text>
+                <Text style={tw`m-4 text-2xl`}>Les 3 derniers Messages</Text>
                 <ScrollView
                     horizontal
                     contentContainerStyle={{ paddingHorizontal: 5 }}
                     showsHorizontalScrollIndicator={true}
                     style={tw`flex-1 relative`}>
 
-                    {messages.slice(0, 5).map((message, index) => (
+                    {messages.slice(0, 3).map((message, index) => (
                         <View key={index} style={tw`justify-center items-center bg-red-500 m-2 p-4 rounded-2xl w-80 h-50`}>
                             <Text style={tw`text-xl text-white mb-4`}>De {message.name}</Text>
                             <Text style={tw`text-white mb-2`}>{message.email} :</Text>

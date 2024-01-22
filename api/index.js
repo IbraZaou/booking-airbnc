@@ -111,6 +111,25 @@ app.delete('/delete-user/:id', async (req, res) => {
     }
 });
 
+//TODO ca ne fonctionne pas
+app.delete('/delete-place/:id', async (req, res) => {
+    const placeId = req.params.id;
+
+    try {
+        // Find the user by ID and remove them
+        const deletedPlace = await User.findByIdAndRemove(placeId);
+
+        if (!deletedPlace) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 
 //delete user id from admin AMA
 app.delete('/users/:id', async (req, res) => {
