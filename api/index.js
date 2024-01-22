@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./models/User.js');
 const Place = require('./models/Place.js');
 const Booking = require('./models/Booking.js');
+const ContactMessage = require('./models/ContactMessage.js');
 const cookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
 const multer = require('multer');
@@ -84,6 +85,54 @@ app.post('/register', (req, res) => {
         });
 })
 
+// Get all users
+app.get('/all-users', async (req, res) => {
+    const users = await User.find();
+    res.json(users);
+})
+
+
+//TODO ca ne fonctionne pas
+app.delete('/delete-user/:id', async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        // Find the user by ID and remove them
+        const deletedUser = await User.findByIdAndRemove(userId);
+
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
+//delete user id from admin AMA
+app.delete('/users/:id', async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        // Find the user by ID and delete them
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            // If the user doesn't exist, return a 404 Not Found response
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+
+        // Return a success message
+        res.json({ message: "Utilisateur supprimé avec succès" });
+    } catch (error) {
+        // In case of an error, return an internal server error response
+        console.error(error);
+        res.status(500).json({ message: "Erreur du serveur interne" });
+    }
+});
 
 
 // Login with google
@@ -162,7 +211,6 @@ passport.deserializeUser(async (id, done) => {
         done(error);
     }
 });
-
 
 
 
@@ -338,7 +386,7 @@ app.get('/places', async (req, res) => {
 })
 
 
-//DELETE BOOKING
+//DELETE Place
 app.delete('/places/:id', async (req, res) => {
     const placeId = req.params.id;
 
@@ -369,10 +417,14 @@ app.post('/bookings', async (req, res) => {
 })
 
 
-// GET ALL BOOKINGS
+// GET ALL BOOKINGS FOR A USER 
 app.get('/bookings', async (req, res) => {
     const userData = await getUserDataFromReq(req);
     res.json(await Booking.find({ user: userData.id }).populate('place'))
+})
+
+app.get('/all-bookings', async (req, res) => {
+    res.json(await Booking.find());
 })
 
 
@@ -580,6 +632,11 @@ app.post('/send-message', async (req, res) => {
     const { name, email, message } = req.body;
 
     try {
+
+        // Enregistrer le message dans la base de données
+        await ContactMessage.create({ name, email, message });
+
+
         // Préparation de l'e-mail
         const mailOptions = {
             from: email, // L'email de l'expéditeur (l'utilisateur qui remplit le formulaire)
@@ -604,6 +661,11 @@ app.post('/send-message', async (req, res) => {
         res.status(500).json({ message: "Erreur du serveur interne" });
     }
 });
+
+
+app.get('/messages', async (req, res) => {
+    res.json(await ContactMessage.find());
+})
 
 
 // port listener :
