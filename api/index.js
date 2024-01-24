@@ -430,8 +430,6 @@ app.post('/bookings', async (req, res) => {
         numberOfGuests, name, phone, price, user: userData.id
     }).then((doc) => {
         res.json(doc);
-    }).catch((err) => {
-        throw err;
     })
 })
 

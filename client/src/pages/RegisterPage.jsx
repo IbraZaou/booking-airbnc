@@ -16,7 +16,7 @@ const RegisterPage = () => {
         setInputType('text');
     };
 
-    const CustomToastWithLink = () => (
+    const CustomToastLink = () => (
         <div>
             <Link to="/login">Vous êtes bien inscrit cliquez ici pour vous connectez</Link>
         </div>
@@ -35,16 +35,10 @@ const RegisterPage = () => {
                 email,
                 password
             });
-            toast.success(CustomToastWithLink);
-            // setRedirect(true);
+            toast.success(CustomToastLink);
         } catch (err) {
-            toast.error('Registration failed. Please try again later');
+            toast.error('Votre mot de passe doit contenir au moins 5 caractères, dont une majuscule, un chiffre et un caractère spécial.');
         }
-    }
-
-
-    if (redirect) {
-        return <Navigate to={'/login'} />
     }
 
     return (
@@ -57,13 +51,14 @@ const RegisterPage = () => {
                         value={name}
                         onChange={ev => setName(ev.target.value)}
                         type="text"
+                        required
                         placeholder='John Doe' />
-
                     <input
                         value={email}
                         onChange={ev => setEmail(ev.target.value)}
                         type="email"
                         placeholder='your@email.com'
+                        required
                         autoComplete='off' />
 
                     <div className='flex justify-center items-center'>
@@ -71,6 +66,7 @@ const RegisterPage = () => {
                             type={inputType}
                             placeholder='password'
                             value={password}
+                            required
                             onChange={ev => setPassword(ev.target.value)}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}

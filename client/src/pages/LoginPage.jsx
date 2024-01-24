@@ -23,16 +23,25 @@ const LoginPage = () => {
         setInputType('password');
     };
 
+    const CustomToastLink = () => (
+        <div>
+            <Link to="/">Voir les différents appartements ?</Link>
+        </div>
+    );
+
+
+
     async function handleLoginSubmit(ev) {
         ev.preventDefault();
 
         try {
             const response = await axios.post('/login', { email, password });
             setUser(response.data);
-            toast.success('Login successful');
-            setRedirect(true);
+            toast.success('Vous êtes bien connecté :)');
+            toast.info(CustomToastLink);
+            // setRedirect(true);
         } catch (err) {
-            toast.error('email or password incorrect, try again');
+            toast.error('Email ou mot de passe incorrect');
         }
     }
 

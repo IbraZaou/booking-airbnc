@@ -3,6 +3,8 @@ import { differenceInCalendarDays } from 'date-fns';
 import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from './UserContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function BookingWidget({ place }) {
@@ -15,13 +17,48 @@ export default function BookingWidget({ place }) {
     const [redirect, setRedirect] = useState('');
     const { user } = useContext(UserContext);
 
+
+    // Si la date de checkout est antérieur a la date de check-in 
+    useEffect(() => {
+        if (checkIn && checkOut) {
+            const inDate = new Date(checkIn);
+            const outDate = new Date(checkOut);
+
+            if (inDate > outDate) {
+                toast.error('La date de check-out ne peut pas être antérieure à la date de check-in.');
+            } else if (checkIn === checkOut) {
+                toast.info('Vous devez au minimum booker un jour.');
+
+            }
+        }
+    }, [checkIn, checkOut]);
+
+
+    // Nombre d'invité minimum
+    useEffect(() => {
+        if (parseInt(numberOfGuests) < 1) {
+            toast.error('Vous devez mettre au minimum une personne');
+        } else if (parseInt(numberOfGuests) > 15) {
+            toast.error('Vous pouvez mettre au maximum 15 personnes');
+
+        }
+    }, [numberOfGuests]);
+
+
     useEffect(() => {
 
         if (user) {
             setName(user.name);
         }
-    }, [user])
+    }, [user]);
 
+
+    // Verifier que tout les champs ont bien été rempli
+    function isFormValid() {
+        return checkIn && checkOut && numberOfGuests >= 1 && numberOfGuests <= 15 && name && phone && numberOfNights > 0;
+    }
+
+    // Affichage du calcul pour les jours déposé
     let numberOfNights = 0;
     if (checkIn && checkOut) {
         numberOfNights = differenceInCalendarDays(new Date(checkOut), new Date(checkIn));
@@ -41,9 +78,11 @@ export default function BookingWidget({ place }) {
 
     return (
         <div className='bg-white grid-cols-1  md:p-4 rounded-2xl shadow'>
+            <ToastContainer />
             <div className='text-2xl text-center'>
                 {place.price} € / par nuit
             </div>
+
 
             <div className="border rounded-2xl mt-4">
                 <div className="flex justify-center items-center">
@@ -52,6 +91,7 @@ export default function BookingWidget({ place }) {
                         <input
                             className='border border-black p-2 rounded-2xl'
                             type="date"
+                            required
                             value={checkIn}
                             onChange={ev => setCheckIn(ev.target.value)} />
                     </div>
@@ -61,6 +101,7 @@ export default function BookingWidget({ place }) {
                         <input
                             className='border border-black p-2 rounded-2xl'
                             type="date"
+                            required
                             value={checkOut}
                             onChange={ev => setCheckOut(ev.target.value)} />
                     </div>
@@ -72,6 +113,8 @@ export default function BookingWidget({ place }) {
                 <input
                     type="number"
                     min={1}
+                    max={15}
+                    required
                     value={numberOfGuests}
                     onChange={ev => setNumberOfGuests(ev.target.value)} />
             </div>
@@ -81,24 +124,31 @@ export default function BookingWidget({ place }) {
                     <input
                         type="text"
                         value={name}
+                        required
                         onChange={ev => setName(ev.target.value)} />
 
                     <label>Phone number:</label>
                     <input
-                        maxlength="10"
+                        max={10}
+                        min={10}
                         type="tel"
+                        required
                         value={phone}
                         onChange={ev => setPhone(ev.target.value)} />
                 </div>
             )}
 
+
+            {numberOfNights > 0 && (
+                <p className='text-center'>Total : <span className='font-bold'> {numberOfNights * place.price} €</span> </p>
+
+            )}
+
             {
                 user ? (
-                    <button onClick={bookThisPlace} className='primary mt-4'>
-                        Book this place for
-                        {numberOfNights > 0 && (
-                            <span> {numberOfNights * place.price} €</span>
-                        )}
+                    // Si tout les champs ne sons pas rempli mettre la class an cursor-not-allowed et grayscale
+                    <button onClick={bookThisPlace} className={`primary mt-4 ${!isFormValid() ? 'cursor-not-allowed grayscale' : ''}`} disabled={!isFormValid()} >
+                        Réserver
                     </button>
                 ) : (
 
@@ -111,6 +161,6 @@ export default function BookingWidget({ place }) {
                 )
             }
 
-        </div>
+        </div >
     );
 };
