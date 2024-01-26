@@ -5,8 +5,6 @@ import AccountNav from '../components/AccountNav';
 import { Navigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-
-
 const PlacesFormPage = () => {
 
     const { id } = useParams();
@@ -36,12 +34,10 @@ const PlacesFormPage = () => {
             setDescription(data.description)
             setPerks(data.perks);
             setExtraInfo(data.extraInfo);
-            setCheckIn(data.checkOut);
+            setCheckIn(data.checkIn);
             setCheckOut(data.checkOut);
             setMaxGuests(data.maxGuests);
             setPrice(data.price);
-
-
         })
 
     }, [id]);
@@ -100,82 +96,111 @@ const PlacesFormPage = () => {
         return <Navigate to={'/account/places'} />
     }
 
+    // Verifier que tout les champs ont bien été rempli
+    function isFormValid() {
+        return title &&
+            address &&
+            addedPhotos.length >= 1 &&
+            description &&
+            perks &&
+            extraInfo &&
+            checkInTimeIsValid(checkIn) &&
+            checkOutTimeIsValid(checkOut) &&
+            maxGuests >= 1 &&
+            maxGuests <= 10 &&
+            price >= 100;
+    }
+
+    // Fonctions de validation des heures
+    function checkInTimeIsValid(checkIn) {
+        return checkIn >= "10:00" && checkIn <= "12:00";
+    }
+
+    function checkOutTimeIsValid(checkOut) {
+        return checkOut >= "12:00" && checkOut <= "18:00";
+    }
 
     return (
         <div>
             <AccountNav />
             <form onSubmit={savePlace}>
                 {/* TITLE */}
-                {preInput('Title', 'title for your place, should be short and catchy as in advertisement')}
+                {preInput('Titre', 'le tritre de votre lieu doit être court et accrocheur')}
                 <input
                     type="text"
-                    placeholder="title, for example : My lovely apt"
+                    placeholder="Titre, par exemple, mon superbe appartement"
                     value={title}
+                    required
                     onChange={ev => setTitle(ev.target.value)} />
 
                 {/* ADDRESS */}
-                {preInput('Address', 'Address to this place')}
+                {preInput('Adresse', 'Adresse de votre lieu')}
                 <input
                     type="text"
-                    placeholder='address'
+                    placeholder='Adresse'
                     value={address}
+                    required
                     onChange={ev => setAddress(ev.target.value)} />
 
                 {/* UPLOAD PICS */}
-                {preInput('Photos', 'More = better')}
-                <PhotosUploader addedPhotos={addedPhotos} onChange={setAddedPhotos} />
+                {preInput('Photos', 'De belles photos pour donner envie !')}
+                <PhotosUploader required addedPhotos={addedPhotos} onChange={setAddedPhotos} />
 
                 {/* DESCRIPTION */}
-                {preInput('Description', 'Description of the place')}
+                {preInput('Description', 'Description de votre lui soyez le plus précis possible')}
                 <textarea value={description} onChange={ev => setDescription(ev.target.value)} />
 
                 {/* PERKS */}
-                {preInput('Perks', 'Select all the perks you have')}
+                {preInput('Atout', 'Selectionné les atouts que vous avez dans votre lieu')}
                 <div className=' mt-2 grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-6'>
-                    <Perks selected={perks} onChange={setPerks} />
+                    <Perks selected={perks} required onChange={setPerks} />
                 </div>
 
                 {/* EXTRA INFO */}
-                {preInput('Extra Info', 'house rules, etc ...')}
-                <textarea value={extraInfo} onChange={ev => setExtraInfo(ev.target.value)} />
+                {preInput('Info supplémentaire', 'Règles, horaires etc ...')}
+                <textarea value={extraInfo} required onChange={ev => setExtraInfo(ev.target.value)} />
 
                 {/* CHECK IN&OUT / MAX GUESTS */}
-                {preInput('Check in & Out times, max guests', 'add check in and ou times, remember to have some time window for cleaning the room between guests')}
+                {preInput("Heure d'arrivé et de départ / nombre de personne / prix par nuit", "ajoutez les heures d'arrivée et de départ, n'oubliez pas de prévoir un créneau horaire pour nettoyer la chambre entre les invités")}
 
                 <div className='grid gap-2 sm:grid-cols-2 md:grid-cols-4'>
                     <div>
-                        <h3 className='mt-2 -mb-1'>Check in time</h3>
+                        <h3 className='mt-2 -mb-1'>Heure d'arrivée</h3>
                         <input
-                            type="text"
-                            placeholder='14:00'
+                            type="time"
                             value={checkIn}
+                            required
                             onChange={ev => setCheckIn(ev.target.value)} />
                     </div>
                     <div>
-                        <h3 className='mt-2 -mb-1'>Check out time</h3>
-                        <input type="text"
-                            placeholder='19:00'
+                        <h3 className='mt-2 -mb-1'>Heure de départ</h3>
+                        <input type="time"
                             value={checkOut}
+                            required
                             onChange={ev => setCheckOut(ev.target.value)} />
                     </div>
                     <div>
-                        <h3 className='mt-2 -mb-1'>Max number of guests</h3>
+                        <h3 className='mt-2 -mb-1'>Nombre maximum de personne</h3>
                         <input
                             type="number"
                             placeholder='2'
                             value={maxGuests}
+                            max={10}
+                            min={1}
+                            required
                             onChange={ev => setMaxGuests(ev.target.value)} />
                     </div>
                     <div>
-                        <h3 className='mt-2 -mb-1'>Price per night</h3>
+                        <h3 className='mt-2 -mb-1'>Prix par nuit (€)</h3>
                         <input
                             type="number"
-                            placeholder='2'
                             value={price}
+                            min={100}
+                            required
                             onChange={ev => setPrice(ev.target.value)} />
                     </div>
                 </div>
-                <button className='primary m-y-4'>Save</button>
+                <button className={`primary mt-4 ${!isFormValid() ? 'cursor-not-allowed grayscale' : ''}`} disabled={!isFormValid()}>Enregistrer</button>
             </form>
         </div>
     );

@@ -2,23 +2,33 @@ import React, { useEffect, useState } from 'react';
 import AccountNav from '../components/AccountNav';
 import axios from 'axios';
 import PlaceImg from '../components/PlaceImg';
-import { differenceInCalendarDays, format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import BookingDates from '../components/BookingDates';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { loadStripe } from '@stripe/stripe-js';
+
 
 
 const BookingsPage = () => {
+    const { id } = useParams();
 
     const [bookings, setBookings] = useState([]);
+    const [booking, setBooking] = useState(null);
+
 
     useEffect(() => {
         axios.get('/bookings').then(response => {
+            const foundBooking = response.data.find(({ _id }) => _id === id);
+            if (foundBooking) {
+                setBooking(foundBooking)
+            }
             setBookings(response.data);
+
         })
 
-    }, []);
+    }, [id]);
+
 
 
     const cancelBooking = async (bookingId) => {
@@ -45,6 +55,28 @@ const BookingsPage = () => {
     };
 
 
+    const stripePayment = async (currentBooking) => {
+        const stripe = await loadStripe("pk_test_51OYYXzBmkOgBJ5DWFIcJgfFaHKk5kYOP3OSAeu2MWrCAaQbWDdI1h3Fjdmh8JEMkjUVEidT9YL7mVgzmrOZ5Rgmu00R6BAQeyo");
+
+        try {
+            const response = await axios.post('/api/create-stripe-session', {
+                // Envoyer les données nécessaires pour la session de paiement
+                price: currentBooking.price,
+                // ... Autres données nécessaires
+            });
+
+            const sessionId = response.data.sessionId;
+
+            // Rediriger l'utilisateur vers la page de paiement Stripe
+            const result = await stripe.redirectToCheckout({ sessionId });
+            if (result.error) {
+                console.log(result.error.message);
+            }
+        } catch (error) {
+            console.error("Error during payment", error);
+        }
+    };
+
 
     return (
         <div>
@@ -52,8 +84,8 @@ const BookingsPage = () => {
             <ToastContainer />
 
             <div className='grid grid-cols-2'>
-                {bookings?.length > 0 && bookings.map(booking => (
-                    <div className=' rounded-2xl flex justify-between bg-gray-200 p-6 mx-8 my-4'>
+                {bookings?.length > 0 && bookings.map((booking, index) => (
+                    <div key={index} className=' rounded-2xl flex justify-between bg-gray-200 p-6 mx-8 my-4'>
                         <Link to={`/account/bookings/${booking._id}`} className="flex gap-4 bg-gray-200 rounded-2xl overflow-hidden">
                             <div className="w-64">
                                 <PlaceImg place={booking.place} />
@@ -77,7 +109,7 @@ const BookingsPage = () => {
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
                                         </svg>
                                         <span className="text-2xl">
-                                            Total price: ${booking.price}
+                                            Total price: {booking.price}€
                                         </span>
                                     </div>
                                 </div>
@@ -87,6 +119,7 @@ const BookingsPage = () => {
                         <div className='flex flex-col justify-between items-center ml-4'>
                             <button onClick={() => cancelBooking(booking._id)} className='bg-red-500 text-center text-white h-full px-4 rounded-xl mb-2' >Annuler la réservation</button>
                             <button className='bg-orange-300 text-center text-white h-full px-4 rounded-xl mt-2' >Modifier la réservation</button>
+                            <button onClick={() => stripePayment(booking)} className='bg-green-500 text-center w-full text-white h-full px-4 rounded-xl mt-4' >Payer la réservation</button>
                         </div>
 
                     </div>

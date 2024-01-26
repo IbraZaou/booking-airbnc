@@ -38,11 +38,10 @@ export default function BookingWidget({ place }) {
     useEffect(() => {
         if (parseInt(numberOfGuests) < 1) {
             toast.error('Vous devez mettre au minimum une personne');
-        } else if (parseInt(numberOfGuests) > 15) {
-            toast.error('Vous pouvez mettre au maximum 15 personnes');
-
+        } else if (parseInt(numberOfGuests) > place.maxGuests) {
+            toast.error(`Vous pouvez mettre au maximum ${place.maxGuests} personnes`);
         }
-    }, [numberOfGuests]);
+    }, [numberOfGuests, place.maxGuests]);
 
 
     useEffect(() => {
@@ -55,7 +54,13 @@ export default function BookingWidget({ place }) {
 
     // Verifier que tout les champs ont bien été rempli
     function isFormValid() {
-        return checkIn && checkOut && numberOfGuests >= 1 && numberOfGuests <= 15 && name && phone && numberOfNights > 0;
+        return checkIn &&
+            checkOut &&
+            numberOfGuests >= 1 &&
+            numberOfGuests <= place.maxGuests &&
+            name &&
+            phone.length === 10 &&
+            numberOfNights > 0;
     }
 
     // Affichage du calcul pour les jours déposé
@@ -87,7 +92,7 @@ export default function BookingWidget({ place }) {
             <div className="border rounded-2xl mt-4">
                 <div className="flex justify-center items-center">
                     <div className='p-4 flex flex-col items-center justify-center'>
-                        <label>Check In</label>
+                        <label>Jour d'arrivée</label>
                         <input
                             className='border border-black p-2 rounded-2xl'
                             type="date"
@@ -97,7 +102,7 @@ export default function BookingWidget({ place }) {
                     </div>
 
                     <div className='p-4 flex flex-col items-center justify-center border-l'>
-                        <label>Check Out</label>
+                        <label>Jour de départ</label>
                         <input
                             className='border border-black p-2 rounded-2xl'
                             type="date"
@@ -109,25 +114,25 @@ export default function BookingWidget({ place }) {
             </div>
 
             <div className='my-4 py-4 px-4 border-t'>
-                <label>Number of guests</label>
+                <label>Nombre de personnes</label>
                 <input
                     type="number"
                     min={1}
-                    max={15}
+                    max={place.maxGuests}
                     required
                     value={numberOfGuests}
                     onChange={ev => setNumberOfGuests(ev.target.value)} />
             </div>
             {numberOfNights > 0 && (
                 <div className='my-4 py-4 px-4 border-t'>
-                    <label>Your full name:</label>
+                    <label>Votre nom:</label>
                     <input
                         type="text"
                         value={name}
                         required
                         onChange={ev => setName(ev.target.value)} />
 
-                    <label>Phone number:</label>
+                    <label>Numéro de téléphone:</label>
                     <input
                         max={10}
                         min={10}
@@ -141,7 +146,6 @@ export default function BookingWidget({ place }) {
 
             {numberOfNights > 0 && (
                 <p className='text-center'>Total : <span className='font-bold'> {numberOfNights * place.price} €</span> </p>
-
             )}
 
             {

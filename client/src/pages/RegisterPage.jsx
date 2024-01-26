@@ -37,7 +37,7 @@ const RegisterPage = () => {
             });
             toast.success(CustomToastLink);
         } catch (err) {
-            toast.error('Votre mot de passe doit contenir au moins 5 caractères, dont une majuscule, un chiffre et un caractère spécial.');
+            toast.error(err.response.data.message);
         }
     }
 

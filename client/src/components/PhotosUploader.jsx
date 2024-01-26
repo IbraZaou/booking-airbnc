@@ -1,6 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
 import Image from "./Image.jsx";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export default function PhotosUploader({ addedPhotos, onChange }) {
     const [photoLink, setPhotoLink] = useState('');
@@ -10,17 +13,17 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
         ev.preventDefault();
         try {
             const response = await axios.post('/upload-by-link', { link: photoLink });
-            const { imagePath } = response.data; // Assurez-vous que la clé est correcte
+            const { imagePath } = response.data;
             onChange(prev => {
                 return [...prev, imagePath];
             });
             setPhotoLink('');
+            toast.success('Votre image a bien été ajouté');
         } catch (error) {
-            console.error('Error uploading image:', error);
+            toast.error(error.response.data.message);
             // Gérer l'erreur ici
         }
     }
-
 
     // Function to upload from explorer
     function uploadPhoto(ev) {
@@ -37,6 +40,7 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
                 return [...prev, ...filenames];
             });
         })
+        toast.success('Votre image a bien été ajouté');
     }
 
 
@@ -44,6 +48,7 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
     function removePhoto(ev, filename) {
         ev.preventDefault();
         onChange([...addedPhotos.filter(photo => photo !== filename)])
+        toast.info('Votre image a bien été supprimé');
     }
 
 
@@ -53,13 +58,18 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
         onChange([filename, ...addedPhotos.filter(photo => photo !== filename)]);
     }
 
+    function isFormValid() {
+        return photoLink
+    }
+
     return (
         <>
+            <ToastContainer />
             <div className="flex gap-2">
                 <input value={photoLink}
                     onChange={ev => setPhotoLink(ev.target.value)}
-                    type="text" placeholder={'Add using a link ....jpg'} />
-                <button onClick={addPhotoByLink} className="bg-gray-200 px-4 rounded-2xl">Add&nbsp;photo</button>
+                    type="text" placeholder={'Ajouter une photo en placant un lien'} />
+                <button onClick={addPhotoByLink} className={`bg-[#F5385D] text-white rounded-2xl ${!isFormValid() ? 'cursor-not-allowed grayscale' : ''}`} disabled={!isFormValid()} >Ajouter une photo</button>
             </div>
             <div className="mt-2 grid gap-2 grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
                 {addedPhotos.length > 0 && addedPhotos.map(link => (
@@ -100,7 +110,7 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
                     </svg>
-                    Upload
+                    Téléverser
                 </label>
             </div>
         </>

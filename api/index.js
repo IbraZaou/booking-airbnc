@@ -293,6 +293,12 @@ app.post('/upload-by-link', async (req, res) => {
     const { link } = req.body;
     const newName = Date.now() + '.jpg';
 
+
+    if (!link.match(/\.(jpg|jpeg)$/i)) {
+        return res.status(400).json({ message: 'Seuls les fichiers JPG sont acceptés' });
+    }
+
+
     try {
         await imageDownloader.image({
             url: link,
@@ -303,7 +309,7 @@ app.post('/upload-by-link', async (req, res) => {
 
         res.json({ imagePath });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to download the image' });
+        return res.status(400).json({ message: 'Entrez un lien valide' });
     }
 });
 
@@ -414,9 +420,9 @@ app.delete('/places/:id', async (req, res) => {
         // Par exemple, si vous utilisez Mongoose :
         await Place.findByIdAndDelete(placeId);
 
-        res.status(200).send({ message: 'Réservation supprimée avec succès' });
+        res.status(200).send({ message: 'Lieu supprimée avec succès' });
     } catch (error) {
-        res.status(500).send({ message: "Erreur lors de la suppression de la réservation" });
+        res.status(400).send({ message: "Erreur lors de la suppression du lieu" });
     }
 });
 
@@ -425,6 +431,7 @@ app.post('/bookings', async (req, res) => {
     const userData = await getUserDataFromReq(req);
     const { place, checkIn, checkOut,
         numberOfGuests, name, phone, price } = req.body;
+
     Booking.create({
         place, checkIn, checkOut,
         numberOfGuests, name, phone, price, user: userData.id

@@ -18,6 +18,7 @@ import SuccessPaymentPage from './pages/SuccessPaymentPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 
+
 axios.defaults.baseURL = 'http://localhost:4000';
 axios.defaults.withCredentials = true;
 
@@ -25,7 +26,6 @@ function App() {
   return (
 
     <UserContextProvider>
-
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<IndexPage />} />
