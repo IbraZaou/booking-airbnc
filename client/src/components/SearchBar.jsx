@@ -2,6 +2,17 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import {
+    Card,
+    CardHeader,
+    CardBody,
+    CardFooter,
+    Typography,
+    Button,
+    Tooltip,
+    IconButton,
+} from "@material-tailwind/react";
+
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [places, setPlaces] = useState([]);
@@ -38,6 +49,9 @@ const SearchBar = () => {
         });
     }, []);
 
+
+
+
     return (
         <div>
             {/* Search Bar */}
@@ -56,21 +70,52 @@ const SearchBar = () => {
             <p className='px-12'>Découvrez les appartements et maisons juste ici</p>
 
             {/* Places Grid or "Nothing found" message */}
-            <div className='mt-4 grid h-screen p-12 gap-x-6 gap-y-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+            <div className='grid h-screen my-24 p-12 gap-x-6 gap-y-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
                 {(searchTerm ? searchResults : places).length > 0 ? (
                     (searchTerm ? searchResults : places).map((place) => (
-                        <Link to={'/place/' + place._id} key={place._id}>
-                            <div className='bg-gray-500 rounded-2xl'>
+                        <Card className="w-full max-w-[26rem] shadow-lg">
+                            <CardHeader floated={false} color="blue-gray">
                                 {place.photos?.[0] && (
-                                    <img className='rounded-2xl object-cover h-80 w-full aspect-square' src={'http://localhost:4000/uploads/' + place.photos?.[0]} alt='' />
+                                    <img
+                                        src={'http://localhost:4000/uploads/' + place.photos?.[0]}
+                                    />
                                 )}
-                            </div>
-                            <h2 className='text-sm truncate leading-4'>{place.title}</h2>
-                            <h3 className='font-bold leading-4'>{place.address}</h3>
-                            <div className='mt-2'>
-                                <span className='font-bold'>{place.price}€</span> per night
-                            </div>
-                        </Link>
+                                <div className="to-bg-black-10 absolute inset-0 h-full w-full bg-gradient-to-tr from-transparent via-transparent to-black/60 " />
+                                <IconButton
+                                    size="sm"
+                                    color="red"
+                                    variant="text"
+                                    className="!absolute top-4 right-4 rounded-full"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        className="h-6 w-6"
+                                    >
+                                        <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                                    </svg>
+                                </IconButton>
+                            </CardHeader>
+                            <CardBody>
+                                <div className="mb-3 flex items-center justify-between">
+                                    <Typography variant="h5" color="blue-gray" className="font-medium">
+                                        {place.title} / <span className='font-bold'>{place.price}€</span> per night
+                                    </Typography>
+
+                                </div>
+                                <br />
+                                <Typography variant="h5" color="blue-gray" className="font-medium">
+                                    {place.address}
+                                </Typography>
+
+                            </CardBody>
+                            <CardFooter className="pt-3 ">
+                                <Link to={'/place/' + place._id} key={place._id} className='primary'>
+                                    Réserver
+                                </Link>
+                            </CardFooter>
+                        </Card>
 
                     ))
                 ) : (
@@ -83,7 +128,13 @@ const SearchBar = () => {
 
                 )}
             </div>
-        </div>
+
+
+
+
+
+
+        </div >
     );
 };
 

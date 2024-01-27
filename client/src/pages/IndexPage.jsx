@@ -12,7 +12,6 @@ const IndexPage = () => {
             <SearchBar />
             <SecondHeroSection />
             <ReviewClient />
-
         </div>
     );
 };
