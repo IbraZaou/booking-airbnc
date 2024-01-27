@@ -428,24 +428,35 @@ app.delete('/places/:id', async (req, res) => {
 
 
 app.post('/bookings', async (req, res) => {
-    const userData = await getUserDataFromReq(req);
-    const { place, checkIn, checkOut,
-        numberOfGuests, name, phone, price } = req.body;
+    try {
+        const userData = await getUserDataFromReq(req);
+        const { place, checkIn, checkOut, numberOfGuests, name, phone, price } = req.body;
 
-    Booking.create({
-        place, checkIn, checkOut,
-        numberOfGuests, name, phone, price, user: userData.id
-    }).then((doc) => {
-        res.json(doc);
-    })
-})
+        // Create the booking with the initial status
+        const newBooking = await Booking.create({
+            place, checkIn, checkOut, numberOfGuests, name, phone, price, user: userData.id
+        });
+
+        res.json(newBooking);
+    } catch (error) {
+        console.error("Error creating new booking", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 
 // GET ALL BOOKINGS FOR A USER 
 app.get('/bookings', async (req, res) => {
-    const userData = await getUserDataFromReq(req);
-    res.json(await Booking.find({ user: userData.id }).populate('place'))
-})
+    try {
+        const userData = await getUserDataFromReq(req);
+        const userBookings = await Booking.find({ user: userData.id })
+            .populate('place')
+        res.json(userBookings);
+    } catch (error) {
+        console.error("Error fetching user bookings", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 app.get('/all-bookings', async (req, res) => {
     res.json(await Booking.find());
@@ -467,13 +478,11 @@ app.delete('/bookings/:id', async (req, res) => {
     const bookingId = req.params.id;
 
     try {
-        // Remplacez ceci par le code nécessaire pour supprimer la réservation de votre base de données
-        // Par exemple, si vous utilisez Mongoose :
         await Booking.findByIdAndDelete(bookingId);
 
         res.status(200).send({ message: 'Réservation supprimée avec succès' });
     } catch (error) {
-        res.status(500).send({ message: "Erreur lors de la suppression de la réservation" });
+        res.status(400).send({ message: "Erreur lors de la suppression de la réservation" });
     }
 });
 
@@ -489,7 +498,7 @@ app.post('/forgot-password', async (req, res) => {
         }
 
         const resetToken = jwt.sign({ email: userDoc.email, id: userDoc._id }, jwtSecret, {
-            expiresIn: '1h' // Le token expire dans 1 heure
+            expiresIn: '1h'
         });
 
         const linkResetPass = `http://localhost:4000/new-password/${userDoc._id}/${resetToken}`
@@ -538,9 +547,6 @@ app.get('/new-password/:id/:token', async (req, res) => {
                 // Token invalide ou expiré
                 return res.status(403).json({ message: "Invalid or expired token" });
             }
-
-            // Token valide, permettre à l'utilisateur de définir un nouveau mot de passe
-            // À implémenter: Logique pour permettre à l'utilisateur de définir un nouveau mot de passe
 
             res.redirect(`http://localhost:5173/new-password/${id}/${token}`);
         });
@@ -596,31 +602,30 @@ app.post('/new-password/:id/:token', async (req, res) => {
 
 const stripe = require('stripe')('sk_test_51OYYXzBmkOgBJ5DWZ35euiyiZrHm6lkKQfPq36ilyv43wkGIDdy79z5dztYsIJVJlATqcOeoaJFcyKIkjpToZrep00EEXMkiTW');
 
-// Route pour créer une session de paiement Stripe
+// Paiement Stripe
 app.post('/api/create-stripe-session', async (req, res) => {
     try {
-        const { price } = req.body; // Récupérer le prix du corps de la requête
+        const { price, bookingId } = req.body;
 
-        // Créer une session de paiement Stripe
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [{
                 price_data: {
-                    currency: 'usd',
+                    currency: 'eur',
                     product_data: {
                         name: 'Booking Payment',
                     },
-                    unit_amount: price * 100, // Le prix doit être en centimes
+                    unit_amount: price * 100,
                 },
                 quantity: 1,
             }],
             mode: 'payment',
             success_url: `http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: 'http://localhost:5173/payment-cancelled',
+            cancel_url: 'http://localhost:5173/',
+            metadata: { bookingId }
         });
 
-        // Renvoyer l'ID de la session au client
-        res.json({ sessionId: session.id });
+        res.json({ sessionId: session.id, bookingId });
     } catch (error) {
         console.error("Error creating Stripe session", error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -646,8 +651,6 @@ app.delete('/delete-account', async (req, res) => {
     }
 
 })
-
-
 
 
 // Contact send message

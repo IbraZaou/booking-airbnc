@@ -7,6 +7,8 @@ import BookingDates from '../components/BookingDates';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { loadStripe } from '@stripe/stripe-js';
+import { confirmAlert } from 'react-confirm-alert'; // Import confirmAlert
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
 
 
@@ -29,8 +31,6 @@ const BookingsPage = () => {
 
     }, [id]);
 
-
-
     const cancelBooking = async (bookingId) => {
         // Trouver la réservation correspondante
         const bookingToCancel = bookings.find(booking => booking._id === bookingId);
@@ -39,20 +39,30 @@ const BookingsPage = () => {
             return;
         }
 
-        const confirmation = window.confirm('Etes-vous sûr de vouloir annuler la réservation pour ' + bookingToCancel.place.title + ' ?');
-        if (!confirmation) {
-            return; // Ne pas continuer si l'utilisateur annule la confirmation
-        }
-
-        try {
-            await axios.delete(`/bookings/${bookingId}`);
-            setBookings(bookings.filter(booking => booking._id !== bookingId));
-            toast.success('Votre réservation a bien été supprimée');
-        } catch (error) {
-            console.error("Error cancelling booking", error);
-            // Gérer l'erreur comme vous le souhaitez
-        }
+        confirmAlert({
+            title: 'Confirmer la suppression',
+            message: 'Etes-vous sûr de vouloir annuler la place pour ' + bookingToCancel.place.title + ' ?',
+            buttons: [
+                {
+                    label: 'Oui',
+                    onClick: async () => {
+                        try {
+                            await axios.delete(`/bookings/${bookingId}`);
+                            setBookings(bookings.filter(booking => booking._id !== bookingId));
+                            toast.success('La réservation a bien été supprimée');
+                        } catch (error) {
+                            toast.error(error.response.data.message);
+                        }
+                    }
+                },
+                {
+                    label: 'Non',
+                    onClick: () => { }
+                }
+            ]
+        });
     };
+
 
 
     const stripePayment = async (currentBooking) => {
@@ -60,14 +70,12 @@ const BookingsPage = () => {
 
         try {
             const response = await axios.post('/api/create-stripe-session', {
-                // Envoyer les données nécessaires pour la session de paiement
                 price: currentBooking.price,
-                // ... Autres données nécessaires
+                bookingId: currentBooking._id,
             });
 
             const sessionId = response.data.sessionId;
 
-            // Rediriger l'utilisateur vers la page de paiement Stripe
             const result = await stripe.redirectToCheckout({ sessionId });
             if (result.error) {
                 console.log(result.error.message);
@@ -76,6 +84,8 @@ const BookingsPage = () => {
             console.error("Error during payment", error);
         }
     };
+
+
 
 
     return (
@@ -109,7 +119,10 @@ const BookingsPage = () => {
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
                                         </svg>
                                         <span className="text-2xl">
-                                            Total price: {booking.price}€
+                                            Total price: {booking.price}€ <br />
+                                            {/* <span className='text-orange-500'>
+                                                {booking.paymentStatus}
+                                            </span> */}
                                         </span>
                                     </div>
                                 </div>
@@ -119,7 +132,9 @@ const BookingsPage = () => {
                         <div className='flex flex-col justify-between items-center ml-4'>
                             <button onClick={() => cancelBooking(booking._id)} className='bg-red-500 text-center text-white h-full px-4 rounded-xl mb-2' >Annuler la réservation</button>
                             <button className='bg-orange-300 text-center text-white h-full px-4 rounded-xl mt-2' >Modifier la réservation</button>
-                            <button onClick={() => stripePayment(booking)} className='bg-green-500 text-center w-full text-white h-full px-4 rounded-xl mt-4' >Payer la réservation</button>
+                            <button onClick={() => stripePayment(booking)} className='bg-green-500 text-center w-full text-white h-full px-4 rounded-xl mt-4'>
+                                Payer la réservation
+                            </button>
                         </div>
 
                     </div>

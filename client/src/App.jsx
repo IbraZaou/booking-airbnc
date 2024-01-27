@@ -17,6 +17,8 @@ import NewPasswordPage from './pages/NewPasswordPage';
 import SuccessPaymentPage from './pages/SuccessPaymentPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import NotFound from './pages/NotFound';
+
 
 
 axios.defaults.baseURL = 'http://localhost:4000';
@@ -44,6 +46,7 @@ function App() {
           <Route path='/payment-success' element={<SuccessPaymentPage />} />
           <Route path='/about' element={<AboutPage />} />
           <Route path='/contact' element={<ContactPage />} />
+          <Route path='/not-found' element={<NotFound />} />
         </Route>
       </Routes>
 
