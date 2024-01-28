@@ -20,15 +20,21 @@ export default function BookingWidget({ place }) {
 
     // Si la date de checkout est antérieur a la date de check-in 
     useEffect(() => {
-        if (checkIn && checkOut) {
+        const today = new Date();
+
+        if (checkIn) {
             const inDate = new Date(checkIn);
+            if (inDate < today) {
+                toast.error('La date de check-in ne peut pas être antérieure à la date actuelle.');
+                setCheckIn(''); // Réinitialise la date de check-in
+            }
+        }
+
+        if (checkOut) {
             const outDate = new Date(checkOut);
-
-            if (inDate > outDate) {
-                toast.error('La date de check-out ne peut pas être antérieure à la date de check-in.');
-            } else if (checkIn === checkOut) {
-                toast.info('Vous devez au minimum booker un jour.');
-
+            if (outDate < today) {
+                toast.error('La date de check-out ne peut pas être antérieure à la date actuelle.');
+                setCheckOut(''); // Réinitialise la date de check-out
             }
         }
     }, [checkIn, checkOut]);

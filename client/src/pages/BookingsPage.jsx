@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AccountNav from '../components/AccountNav';
 import axios from 'axios';
 import PlaceImg from '../components/PlaceImg';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import BookingDates from '../components/BookingDates';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -65,6 +65,7 @@ const BookingsPage = () => {
 
 
 
+
     const stripePayment = async (currentBooking) => {
         const stripe = await loadStripe("pk_test_51OYYXzBmkOgBJ5DWFIcJgfFaHKk5kYOP3OSAeu2MWrCAaQbWDdI1h3Fjdmh8JEMkjUVEidT9YL7mVgzmrOZ5Rgmu00R6BAQeyo");
 
@@ -86,8 +87,6 @@ const BookingsPage = () => {
     };
 
 
-
-
     return (
         <div>
             <AccountNav />
@@ -95,7 +94,7 @@ const BookingsPage = () => {
 
             <div className='grid grid-cols-2'>
                 {bookings?.length > 0 && bookings.map((booking, index) => (
-                    <div key={index} className=' rounded-2xl flex justify-between bg-gray-200 p-6 mx-8 my-4'>
+                    <div key={index} className=' rounded-2xl flex justify-between bg-gray-200 p-6 mx-8 my-4 hover:border border-primary'>
                         <Link to={`/account/bookings/${booking._id}`} className="flex gap-4 bg-gray-200 rounded-2xl overflow-hidden">
                             <div className="w-64">
                                 <PlaceImg place={booking.place} />
@@ -130,8 +129,8 @@ const BookingsPage = () => {
                         </Link>
 
                         <div className='flex flex-col justify-between items-center ml-4'>
-                            <button onClick={() => cancelBooking(booking._id)} className='bg-red-500 text-center text-white h-full px-4 rounded-xl mb-2' >Annuler la réservation</button>
-                            <button className='bg-orange-300 text-center text-white h-full px-4 rounded-xl mt-2' >Modifier la réservation</button>
+                            <button onClick={() => cancelBooking(booking._id)} className='bg-red-500 text-center text-white h-full px-4 rounded-xl mb-2'>Annuler la réservation</button>
+                            <Link to={`/account/bookings/${booking._id}`} className=' flex items-center  bg-orange-300 text-center text-white h-full px-4 rounded-xl mt-2'>Modifier la réservation</Link>
                             <button onClick={() => stripePayment(booking)} className='bg-green-500 text-center w-full text-white h-full px-4 rounded-xl mt-4'>
                                 Payer la réservation
                             </button>
@@ -140,8 +139,6 @@ const BookingsPage = () => {
                     </div>
 
                 ))}
-
-
 
             </div>
         </div>

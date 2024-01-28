@@ -71,8 +71,8 @@ const PlacesPages = () => {
 
             <div className='mt-4 grid grid-cols-3'>
                 {places.length > 0 && places.map((place, index) => (
-                    <div key={index} className=' flex-col rounded-2xl flex justify-between bg-gray-200 p-6 mx-8 my-4' >
-                        <Link to={'/account/places/' + place._id} className='flex flex-col cursor-pointer bg-gray-200 p-4 gap-4 mt-6 rounded-2xl' key={index}>
+                    <div key={index} className=' flex-col rounded-2xl flex justify-between bg-gray-200 p-6 mx-8 my-4 hover:border border-primary' >
+                        <Link to={'/account/places/' + place._id} className='flex flex-col cursor-pointer bg-gray-200 p-4 gap-4 mt-6 rounded-2xl ' key={index}>
                             <h2 className='text-2xl font-semibold text-center mb-4'>{place.title}</h2>
                             <div className='rounded-2xl flex w-45 h-45 bg-gray-300'>
                                 <PlaceImg place={place} />
@@ -86,13 +86,11 @@ const PlacesPages = () => {
                                         </div>
                                     ))}
                                 </div>
-
                             </div>
                             <div className='grow-0 shrink'>
                                 <p className='text-sm mt-2'>{place.description}</p>
                             </div>
                         </Link>
-
                         <div className='flex h-full justify-center items-center'>
                             <div className='flex w-3/4 flex-col justify-between h-min items-center my-5 ml-4'>
                                 <a href={'/account/places/' + place._id} className='bg-orange-300 text-center text-white py-2 px-4 w-full rounded-xl mb-2' >Modifier</a>

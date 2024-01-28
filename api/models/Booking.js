@@ -8,6 +8,7 @@ const BookingSchema = new mongoose.Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true },
     price: Number,
+    // paymentStatus: { type: Boolean, required: true, default: false }
 })
 
 const BookingModel = mongoose.model('Booking', BookingSchema);

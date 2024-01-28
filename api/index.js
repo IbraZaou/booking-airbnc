@@ -53,7 +53,6 @@ function getUserDataFromReq(req) {
 }
 
 
-
 // // Test endpoint
 // app.get('/test', (req, res) => {
 //     res.json('test ok');
@@ -284,7 +283,6 @@ app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true);
 });
 
-
 const path = require('path');
 const BookingModel = require('./models/Booking.js');
 
@@ -297,7 +295,6 @@ app.post('/upload-by-link', async (req, res) => {
     if (!link.match(/\.(jpg|jpeg)$/i)) {
         return res.status(400).json({ message: 'Seuls les fichiers JPG sont acceptés' });
     }
-
 
     try {
         await imageDownloader.image({

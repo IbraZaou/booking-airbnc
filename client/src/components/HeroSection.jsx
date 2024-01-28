@@ -4,7 +4,6 @@ import IMG from '../assets/img/bg_img.png'
 const HeroSection = () => {
     return (
         <div>
-
             <div className="relative">
                 <img src={IMG} alt="Description de l'image" className="w-full brightness-50" />
                 <p className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 text-white text-8xl font-bold px-10">
