@@ -21,7 +21,7 @@ const ResetPasswordPage = () => {
             // Autres actions en cas de succès (par exemple, redirection ou mise à jour de l'état)
         } catch (error) {
             setMessage('An error occurred. Please try again later.'); // Message d'erreur
-            toast.success('Un problème est survenu');
+            toast.error('Un problème est survenu');
 
         }
     };
