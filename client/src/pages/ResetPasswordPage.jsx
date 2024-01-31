@@ -35,18 +35,19 @@ const ResetPasswordPage = () => {
             <div className='mb-64'>
                 <ToastContainer />
 
-                <h1 className='text-4xl text-center mb-4'>Reset Password</h1>
+                <h1 className='text-4xl text-center mb-4'>Réinitialisation du mot de passe</h1>
                 <form className='max-w-md mx-auto' onSubmit={handleResetPassSubmit}>
                     <input
                         type="email"
-                        placeholder='your@email.com'
+                        placeholder='votre@email.com'
                         value={email}
                         onChange={ev => setEmail(ev.target.value)} />
 
-                    <button className='primary'>Send an email</button>
+                    <button className='primary'>Envoyer</button>
                     {message && <p className='text-center py-2 text-gray-500'>{message}</p>}
-                    <p className='text-center py-2 text-gray-500'>Don't have an account yet?
-                        <Link className='underline text-black' to={'/register'}> Register now</Link>
+                    <p className='text-center py-2 text-gray-500'>Vous n'avez pas encore de compte?
+                        <br />
+                        <Link className='underline text-black' to={'/register'}> Inscrivez-vous maintenant !</Link>
                     </p>
 
                 </form>

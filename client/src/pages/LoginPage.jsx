@@ -59,18 +59,18 @@ const LoginPage = () => {
             <div className='mb-64'>
                 <ToastContainer />
 
-                <h1 className='text-4xl text-center mb-4'>Login</h1>
+                <h1 className='text-4xl text-center mb-4'>Connexion</h1>
                 <form className='max-w-md mx-auto' onSubmit={handleLoginSubmit}>
                     <input
                         type="email"
-                        placeholder='your@email.com'
+                        placeholder='votre@email.com'
                         value={email}
                         onChange={ev => setEmail(ev.target.value)} />
 
                     <div className='flex justify-center items-center'>
                         <input
                             type={inputType}
-                            placeholder='password'
+                            placeholder='mot de passe'
                             value={password}
                             onChange={ev => setPassword(ev.target.value)}
                             onMouseEnter={handleMouseEnter}
@@ -84,18 +84,18 @@ const LoginPage = () => {
 
 
 
-                    <button className='primary'>Login</button>
+                    <button className='primary'>Connexion</button>
                     <button
                         className='flex py-2 bg-white border border-black rounded-2xl my-2 items-center w-full justify-center' onClick={handleGoogleLogin}>
                         <img className='w-6 mx-2' src={GOOGLE} alt="" />
-                        Login with Google
+                        Se connecter avec Google
                     </button>
-                    <p className='text-center py-2 text-gray-500'>Don't have an account yet?
-                        <Link className='underline text-black mx-1' to={'/register'}>Register now</Link>
+                    <p className='text-center py-2 text-gray-500'>Vous n'avez pas encore de compte?
+                        <Link className='underline text-black mx-1' to={'/register'}>S'inscrire</Link>
                     </p>
 
-                    <p className='text-center py-2 text-gray-500'>Maybe your forgot your password?
-                        <Link className='underline text-black mx-1' to={'/reset-password'}>Reset it</Link>
+                    <p className='text-center py-2 text-gray-500'>Vous avez oublier votre mot de passe?
+                        <Link className='underline text-black mx-1' to={'/reset-password'}>Réinitialiser en cliquant ici</Link>
                     </p>
 
                 </form>

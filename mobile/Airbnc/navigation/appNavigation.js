@@ -84,7 +84,6 @@ export default function AppNavigation() {
                         }}
                     />
 
-
                     <Tab.Screen
                         name="Place"
                         component={PlaceStack}

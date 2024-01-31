@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Place = require('../models/Place');
 const bcrypt = require('bcryptjs');
 const { validatePassword } = require('../utils/passwordUtils');
 const jwtSecret = require('../config/jwtConfig');
@@ -123,10 +124,14 @@ const deleteUserAccount = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
+        // Suppression de toutes les places liée a l'utilisateur
+        await Place.deleteMany({ owner: userData.id });
+        // Puis supprimer l'utilisateur 
         await User.findByIdAndDelete(userData.id);
+
         res.clearCookie('token').json({ message: "Account deleted successfully" });
     } catch (err) {
-        console.error('Error deleting account:', error);
+        console.error('Error deleting account:', err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 }

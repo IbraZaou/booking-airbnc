@@ -5,6 +5,7 @@ import axios from 'axios';
 import PlacesPages from './PlacesPage';
 import AccountNav from '../components/AccountNav';
 import { ToastContainer, toast } from 'react-toastify';
+import { confirmAlert } from 'react-confirm-alert';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ProfilePage = () => {
@@ -20,22 +21,29 @@ const ProfilePage = () => {
     }
 
     async function deleteAccount() {
-        const confirmDelete = window.confirm("êtes vous sur de vouloir supprimer votre compte, cette action est irréversible");
-
-
-        if (confirmDelete) {
-            try {
-                await axios.delete('/delete-account');
-                setUser(null);
-                setRedirect('/');
-                toast.success('Votre compte a bien été supprimé');
-            } catch (err) {
-                toast.error('Une erreur est survenue');
-            }
-        }
-
-        console.log('votre compte a bien été supprimé');
-
+        confirmAlert({
+            title: 'Confirmer la suppression',
+            message: 'êtes vous sûr de vouloir supprimer votre compte, cette action est irréversible',
+            buttons: [
+                {
+                    label: 'Oui',
+                    onClick: async () => {
+                        try {
+                            await axios.delete('/delete-account');
+                            setUser(null);
+                            setRedirect('/');
+                            toast.success('Votre compte a bien été supprimé');
+                        } catch (err) {
+                            toast.error('Une erreur est survenue');
+                        }
+                    }
+                },
+                {
+                    label: 'Non',
+                    onClick: () => { }
+                }
+            ]
+        });
     }
 
 

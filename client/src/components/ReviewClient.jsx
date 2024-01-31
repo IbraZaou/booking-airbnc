@@ -12,16 +12,16 @@ import { FreeMode, Pagination } from 'swiper/modules';
 
 
 const fakeReviews = [
-    { id: 1, name: "Alice Smith", review: "L'application est très facile à utiliser et l'hébergement est fiable.", rating: 5 },
-    { id: 2, name: "Bob Johnson", review: "Excellent service client, ils ont rapidement résolu mon problème.", rating: 4 },
-    { id: 3, name: "Charlie Brown", review: "Très satisfait de la vitesse et de la stabilité de l'hébergement.", rating: 5 },
-    { id: 4, name: "Diana Prince", review: "Interface intuitive et performances solides, je recommande !", rating: 5 },
-    { id: 5, name: "Edward King", review: "Bon rapport qualité-prix, l'hébergement répond à mes attentes.", rating: 4 },
-    { id: 6, name: "Fiona Green", review: "Impressionnée par la sécurité et la disponibilité du service.", rating: 5 },
-    { id: 7, name: "George White", review: "Facile à configurer, et l'assistance est toujours disponible.", rating: 4 },
-    { id: 8, name: "Hannah Young", review: "Excellente performance pour mon site e-commerce, très satisfait.", rating: 5 },
-    { id: 9, name: "Ian Scott", review: "L'application manque de certaines fonctionnalités, mais reste bonne.", rating: 3 },
-    { id: 10, name: "Julie King", review: "Support réactif et hébergement fiable, je recommande sans hésiter.", rating: 5 }
+    { id: 1, name: "Alice Smith", review: "L'application est très facile à utiliser et l'hébergement est fiable." },
+    { id: 2, name: "Bob Johnson", review: "Excellent service client, ils ont rapidement résolu mon problème." },
+    { id: 3, name: "Charlie Brown", review: "Très satisfait de la vitesse et de la stabilité de l'hébergement." },
+    { id: 4, name: "Diana Prince", review: "Interface intuitive et performances solides, je recommande !" },
+    { id: 5, name: "Edward King", review: "Bon rapport qualité-prix, l'hébergement répond à mes attentes." },
+    { id: 6, name: "Fiona Green", review: "Impressionnée par la sécurité et la disponibilité du service." },
+    { id: 7, name: "George White", review: "Facile à configurer, et l'assistance est toujours disponible." },
+    { id: 8, name: "Hannah Young", review: "Excellente performance pour mon site e-commerce, très satisfait." },
+    { id: 9, name: "Ian Scott", review: "L'application manque de certaines fonctionnalités, mais reste bonne." },
+    { id: 10, name: "Julie King", review: "Support réactif et hébergement fiable, je recommande sans hésiter." }
 ];
 
 const ReviewClient = () => {
@@ -36,10 +36,7 @@ const ReviewClient = () => {
                 className="mySwiper mx-20"
             >
                 {fakeReviews.map(review => (
-                    <SwiperSlide className='bg-white rounded-2xl flex flex-col justify-between h-64 p-10' key={review.id}>
-
-                        <span>{review.rating}/5</span>
-
+                    <SwiperSlide className='bg-white rounded-2xl flex flex-col justify-between h-52 p-10' key={review.id}>
                         <p>{review.review}</p>
 
                         <div className='flex justify-start items-center'>

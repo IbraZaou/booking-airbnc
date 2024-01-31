@@ -43,13 +43,14 @@ const NewPasswordPage = () => {
         <div className='mt-4 grow flex items-center justify-around'>
             <div className='mb-64'>
                 <ToastContainer />
-                <h1 className='text-4xl text-center mb-4'>Reset your password</h1>
+                <h1 className='text-4xl text-center mb-4'>Réinitialiser votre mot de passe</h1>
                 <form className='max-w-md mx-auto' onSubmit={handleSubmit}>
                     <div className='flex justify-center items-center'>
                         <input
                             type={inputType}
-                            placeholder='password'
+                            placeholder='mot de passe'
                             value={newPassword}
+                            autocomplete='off'
                             onChange={ev => setNewPassword(ev.target.value)}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
@@ -64,9 +65,9 @@ const NewPasswordPage = () => {
                         Le mot de passe doit contenir au moins 5 caractères, dont une majuscule, un chiffre et un caractère spécial.
                     </div>
 
-                    <button type='submit' className='primary'>Reset</button>
+                    <button type='submit' className='primary'>Réinitialiser</button>
                     <div className='bg-primary mt-2 text-center p-2 w-full text-white rounded-2xl'>
-                        <a href={'/login'} className='text-center'>Login</a>
+                        <a href={'/login'} className='text-center'>Connexion</a>
                     </div>
 
                 </form>
