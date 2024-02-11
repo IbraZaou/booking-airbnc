@@ -26,7 +26,7 @@ export default function BookingWidget({ place }) {
             const inDate = new Date(checkIn);
             if (inDate < today) {
                 toast.error('La date de check-in ne peut pas être antérieure à la date actuelle.');
-                setCheckIn(''); // Réinitialise la date de check-in
+                setCheckIn('');
             }
         }
 
@@ -34,7 +34,7 @@ export default function BookingWidget({ place }) {
             const outDate = new Date(checkOut);
             if (outDate < today) {
                 toast.error('La date de check-out ne peut pas être antérieure à la date actuelle.');
-                setCheckOut(''); // Réinitialise la date de check-out
+                setCheckOut('');
             }
         }
     }, [checkIn, checkOut]);

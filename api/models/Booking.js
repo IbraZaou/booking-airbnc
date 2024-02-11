@@ -8,7 +8,13 @@ const BookingSchema = new mongoose.Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true },
     price: Number,
-    // paymentStatus: { type: Boolean, required: true, default: false }
+    //Not yet
+    paymentStatus: {
+        type: String,
+        required: true,
+        enum: ['en attente', 'payé'],
+        default: 'en attente'
+    }
 })
 
 const BookingModel = mongoose.model('Booking', BookingSchema);

@@ -119,9 +119,9 @@ const BookingsPage = () => {
                                         </svg>
                                         <span className="text-2xl">
                                             Total price: {booking.price}€ <br />
-                                            {/* <span className='text-orange-500'>
-                                                {booking.paymentStatus}
-                                            </span> */}
+                                            <span className={`text-${booking.paymentStatus === 'payé' ? 'green-500' : 'orange-500'}`}>
+                                                {booking.paymentStatus === 'payé' ? 'Payé' : 'Paiement en attente'}
+                                            </span>
                                         </span>
                                     </div>
                                 </div>

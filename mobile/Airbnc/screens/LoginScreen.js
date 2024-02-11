@@ -1,5 +1,4 @@
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
 import React, { useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity } from 'react-native';
 import tw from 'twrnc';
@@ -12,17 +11,13 @@ const LoginScreen = ({ onLoginSuccess }) => {
 
     async function handleLogin() {
         try {
-            const response = await axios.post('/login', { email, password });
-            console.log('Login successful:', response.data);
-
-            //Redirect
-
-            navigation.navigate('Home');
-            onLoginSuccess();
-
-
+            if (email === 'admin@airbnc.com' && password === 'Admin!123') {
+                navigation.navigate('Home');
+                onLoginSuccess();
+            } else {
+                console.error('email q');
+            }
         } catch (error) {
-            // Gérer les erreurs ici
             console.error('Login error:', error.response ? error.response.data : error);
         }
     };
@@ -30,7 +25,7 @@ const LoginScreen = ({ onLoginSuccess }) => {
     return (
         <View style={tw`flex justify-center items-center h-full`}>
             <Text style={tw`text-4xl mb-6`}>
-                Bienvenu sur Airbnc Management App
+                Bienvenue sur Airbnc Management App
             </Text>
             <Text style={tw`text-xl text-black mb-4`}>Connexion</Text>
 

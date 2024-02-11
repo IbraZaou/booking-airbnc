@@ -1,4 +1,5 @@
 const stripe = require('../config/stripeConfig');
+const BookingModel = require('../models/Booking');
 
 const createStripeSession = async (req, res) => {
     try {
@@ -28,5 +29,28 @@ const createStripeSession = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
+
+
+// const paymentSuccess = async (req, res) => {
+//     try {
+//         const sessionId = req.query.session_id;
+//         console.log("Received session_id:", sessionId); // Pour vérifier l'ID de session reçu
+
+//         const session = await stripe.checkout.sessions.retrieve(sessionId);
+//         console.log("Stripe session retrieved successfully:", session);
+
+//         const bookingId = session.metadata.bookingId;
+//         console.log("Retrieved bookingId from metadata:", bookingId); // Confirmer la récupération de l'ID de réservation
+
+//         const updatedBooking = await BookingModel.findByIdAndUpdate(bookingId, { paymentStatus: 'payé' }, { new: true });
+//         console.log("Booking updated successfully:", updatedBooking); // Confirmer la mise à jour de la réservation
+
+//         res.redirect('http://localhost:5173/payment-success');
+//     } catch (error) {
+//         console.error("Error verifying Stripe session or updating payment status", error);
+//         res.status(500).json({ message: "Internal Server Error" });
+//     }
+// }
 
 module.exports = { createStripeSession };
