@@ -2,6 +2,8 @@ import React, { useContext, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { UserContext } from './UserContext';
 import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Header = () => {
@@ -12,11 +14,28 @@ const Header = () => {
     async function logout() {
         await axios.post('/logout');
         setUser(null);
-        setRedirect('/');
+    }
+
+
+    async function logout(ev) {
+        ev.preventDefault();
+
+        try {
+            const response = await axios.post('/logout');
+            setUser(response.data);
+            setRedirect(true);
+        } catch (err) {
+            console.error('Une erreur est survenue');
+        }
+    }
+
+    if (redirect) {
+        return <Navigate to={'/'} />
     }
 
     return (
         <div>
+
             <header className='flex justify-between p-4'>
 
                 <Link to={user ? '/account' : '/login'} className="flex flex-col justify-center items-center gap-2 border border-gray-300 p-6 rounded-2xl">

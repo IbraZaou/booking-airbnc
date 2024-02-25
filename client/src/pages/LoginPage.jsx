@@ -29,8 +29,6 @@ const LoginPage = () => {
         </div>
     );
 
-
-
     async function handleLoginSubmit(ev) {
         ev.preventDefault();
 
@@ -39,7 +37,7 @@ const LoginPage = () => {
             setUser(response.data);
             toast.success('Vous êtes bien connecté :)');
             toast.info(CustomToastLink);
-            // setRedirect(true);
+            setRedirect(true);
         } catch (err) {
             toast.error('Email ou mot de passe incorrect');
         }

@@ -4,7 +4,6 @@ import SearchBar from '../components/SearchBar';
 import SecondHeroSection from '../components/SecondHeroSection';
 import ReviewClient from '../components/ReviewClient';
 
-
 const IndexPage = () => {
     return (
         <div>

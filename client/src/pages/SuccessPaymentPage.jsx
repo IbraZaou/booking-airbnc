@@ -1,7 +1,9 @@
 import React from 'react';
+import { useParams } from 'react-router-dom'; // Import useParams hook
 
 const SuccessPaymentPage = () => {
-
+    const { bookingId } = useParams(); // Access bookingId from URL
+    console.log(bookingId);
     return (
         <div className='mt-4 grow flex items-center justify-around'>
             <div className="flex-col flex items-center justify-around h-96 ">
@@ -14,9 +16,9 @@ const SuccessPaymentPage = () => {
                 <h3 className='text-2xl' >
                     Vérifiez votre e-mail pour trouver votre confirmation de commande</h3>
 
-                < a href={'/'} className='primary text-center' >Retourner a l'accueil</a >
+                <a href={'/'} className='primary text-center' >Retourner a l'accueil</a>
             </div>
-        </div >
+        </div>
     );
 };
 
