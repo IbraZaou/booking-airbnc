@@ -80,6 +80,12 @@ const BookingsPage = () => {
             const result = await stripe.redirectToCheckout({ sessionId });
             if (result.error) {
                 console.log(result.error.message);
+            } else {
+                // Mettre à jour le statut de paiement dans l'interface utilisateur
+                const updatedBookings = bookings.map(booking =>
+                    booking._id === currentBooking._id ? { ...booking, paymentStatus: 'payé' } : booking
+                );
+                setBookings(updatedBookings);
             }
         } catch (error) {
             console.error("Error during payment", error);

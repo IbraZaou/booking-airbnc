@@ -21,6 +21,7 @@ const deletePlace = async (req, res) => {
 
 // Fonction de création de places
 const createPlace = async (req, res) => {
+    // Récupération du token JWT stocké dans les cookies de la requête
     const { token } = req.cookies;
     const {
         title, address, addedPhotos,
@@ -29,6 +30,7 @@ const createPlace = async (req, res) => {
     } = req.body;
 
     try {
+        // Vérification du token JWT pour authentifier l'utilisateur et extraire ses données
         const userData = jwt.verify(token, jwtSecret);
         const placeDoc = await Place.create({
             owner: userData.id,
