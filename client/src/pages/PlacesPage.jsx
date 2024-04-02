@@ -69,7 +69,7 @@ const PlacesPages = () => {
             </div>
 
 
-            <div className='mt-4 grid grid-cols-3'>
+            <div className='mt-4 grid grid-cols-2'>
                 {places.length > 0 && places.map((place, index) => (
                     <div key={index} className=' flex-col rounded-2xl flex justify-between bg-gray-200 p-6 mx-8 my-4 hover:border border-primary' >
                         <Link to={'/account/places/' + place._id} className='flex flex-col cursor-pointer bg-gray-200 p-4 gap-4 mt-6 rounded-2xl ' key={index}>

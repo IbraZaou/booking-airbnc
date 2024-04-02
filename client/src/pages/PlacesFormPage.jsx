@@ -121,7 +121,7 @@ const PlacesFormPage = () => {
     }
 
     return (
-        <div>
+        <div className='w-1/2 mx-auto'>
             <AccountNav />
             <form onSubmit={savePlace}>
                 {/* TITLE */}
@@ -165,7 +165,7 @@ const PlacesFormPage = () => {
 
                 <div className='grid gap-2 sm:grid-cols-2 md:grid-cols-4'>
                     <div>
-                        <h3 className='mt-2 -mb-1'>Heure d'arrivée</h3>
+                        {preInput("Heure d'arrivée", "seulement entre 10:00 et 12:00")}
                         <input
                             type="time"
                             value={checkIn}
@@ -173,7 +173,7 @@ const PlacesFormPage = () => {
                             onChange={ev => setCheckIn(ev.target.value)} />
                     </div>
                     <div>
-                        <h3 className='mt-2 -mb-1'>Heure de départ</h3>
+                    {preInput("Heure de départ", "seulement entre 12:00 et 18:00")}
                         <input type="time"
                             value={checkOut}
                             required

@@ -98,7 +98,7 @@ const BookingsPage = () => {
             <AccountNav />
             <ToastContainer />
 
-            <div className='grid grid-cols-2'>
+            <div className='grid'>
                 {bookings?.length > 0 && bookings.map((booking, index) => (
                     <div key={index} className=' rounded-2xl flex justify-between bg-gray-200 p-6 mx-8 my-4 hover:border border-primary'>
                         <Link to={`/account/bookings/${booking._id}`} className="flex gap-4 bg-gray-200 rounded-2xl overflow-hidden">
