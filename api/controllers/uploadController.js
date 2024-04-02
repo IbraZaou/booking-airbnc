@@ -9,7 +9,7 @@ const uploadByLink = async (req, res) => {
     const newName = Date.now() + '.jpg';
 
     if (!link.match(/\.(jpg|jpeg)$/i)) {
-        return res.status(400).json({ message: 'Seuls les fichiers JPG sont acceptés' });
+        return res.status(400).json({ message: 'Seuls les fichiers JPG ou JPEG sont acceptés' });
     }
 
     try {
