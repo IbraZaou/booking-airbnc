@@ -106,7 +106,6 @@ export default function AppNavigation() {
                         }}
                     />
 
-
                     <Tab.Screen
                         name="Message"
                         component={MessageStack}

@@ -21,46 +21,74 @@ const PlaceScreen = () => {
     }, []);
 
 
-    const deletePlace = async (userId) => {
+    const deletePlace = async (placeId) => {
         try {
-            // Send a DELETE request to your server to delete the user
-            await axios.delete(`/delete-place/${userId}`);
+            // Send a DELETE request to your server to delete the place
+            await axios.delete(`/places/${placeId}`);
         } catch (error) {
             console.error("Erreur lors de la suppression de l'appart:", error);
         }
     };
 
     return (
-        <View style={tw`flex justify-center items-center h-full`}>
-            <ScrollView
-                contentContainerStyle={{ paddingHorizontal: 5 }}
-                showsHorizontalScrollIndicator={true}
-                style={tw`flex-1 relative`}>
-
-
-                {places.map((place, index) => (
-                    <View key={index} style={tw`justify-center items-center bg-red-500 m-2 p-4 rounded-2xl w-80 h-100`}>
-                        {place.photos?.[0] && (
-                            <Image
-                                style={tw`h-50 w-full rounded-xl`}
-                                source={{ uri: 'http://192.168.1.32:4000/uploads/' + place.photos[0] }} // Replace with your server's IP
-                            />
+ 
+        <View style={tw`flex justify-center items-center h-full bg-gray-100`}>
+        <ScrollView
+            contentContainerStyle={{ paddingHorizontal: 10 }}
+            showsHorizontalScrollIndicator={false}
+            style={tw`flex-1 relative`}>
+    
+            {places.map((place, index) => (
+                // Wrap each pair of Views in a new View with flex-direction row
+                // Only create a new row for even index elements
+                index % 2 === 0 && (
+                    <View key={index} style={tw`flex-row justify-around items-center`}>
+                        {/* Left element */}
+                        <View style={tw`bg-white m-2 p-5 rounded-3xl shadow-lg w-64`}>
+                            {places[index].photos?.[0] && (
+                                <Image
+                                    style={tw`h-40 w-full rounded-2xl`}
+                                    source={{ uri: 'http://192.168.12.80:4000/uploads/' + places[index].photos[0] }}
+                                />
+                            )}
+                            <Text style={tw`text-xl text-gray-800 mt-2`}>{places[index].title}</Text>
+                            <Text style={tw`text-sm text-gray-600 mt-1`}>{places[index].address}</Text>
+                            <Text style={tw`text-lg text-gray-800 mt-1`}>{places[index].price}€ / nuit</Text>
+                            <TouchableOpacity
+                                style={tw`mt-4 bg-red-500 rounded-xl py-2 items-center`}
+                                onPress={() => deletePlace(places[index]._id)}
+                            >
+                                <Text style={tw`text-white text-lg`}>Supprimer</Text>
+                            </TouchableOpacity>
+                        </View>
+    
+                        {/* Right element (check if it exists first) */}
+                        {places[index + 1] && (
+                            <View style={tw`bg-white m-2 p-5 rounded-3xl shadow-lg w-64`}>
+                                {places[index + 1].photos?.[0] && (
+                                    <Image
+                                        style={tw`h-40 w-full rounded-2xl`}
+                                        source={{ uri: 'http://192.168.12.80:4000/uploads/' + places[index + 1].photos[0] }}
+                                    />
+                                )}
+                                <Text style={tw`text-xl text-gray-800 mt-2`}>{places[index + 1].title}</Text>
+                                <Text style={tw`text-sm text-gray-600 mt-1`}>{places[index + 1].address}</Text>
+                                <Text style={tw`text-lg text-gray-800 mt-1`}>{places[index + 1].price}€ / nuit</Text>
+                                <TouchableOpacity
+                                    style={tw`mt-4 bg-red-500 rounded-xl py-2 items-center`}
+                                    onPress={() => deletePlace(places[index + 1]._id)}
+                                >
+                                    <Text style={tw`text-white text-lg`}>Supprimer</Text>
+                                </TouchableOpacity>
+                            </View>
                         )}
-
-                        <Text style={tw`text-xl text-white`}>{place.title}</Text>
-                        <Text style={tw`text-center text-white`}>{place.address}</Text>
-                        <Text style={tw`text-center text-white`}>{place.price}€ / par nuit</Text>
-
-                        <TouchableOpacity
-                            style={tw`bg-blue-500 rounded-2xl w-40 p-3 my-4`}
-                            onPress={() => deletePlace(place._id)}
-                        >
-                            <Text style={tw`bg-blue-500 p-2 w-full text-center text-white rounded-2xl;`}>Supprimer l'appartement</Text>
-                        </TouchableOpacity>
                     </View>
-                ))}
-            </ScrollView>
-        </View>
+                )
+            ))}
+        </ScrollView>
+    </View>
+    
+
     );
 };
 

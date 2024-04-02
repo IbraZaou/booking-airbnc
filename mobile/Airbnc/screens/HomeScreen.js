@@ -83,18 +83,6 @@ const HomeScreen = () => {
 
     const navigation = useNavigation();
 
-    const showPlaces = () => {
-        navigation.navigate('Place', { places });
-    };
-
-    const showUsers = () => {
-        navigation.navigate('User', { users });
-    };
-
-    const showMessages = () => {
-        navigation.navigate('Message', { messages });
-    };
-
     // Total prix des reservation 
     const totalPrice = bookings.reduce((accumulator, booking) => {
         return accumulator + booking.price;
